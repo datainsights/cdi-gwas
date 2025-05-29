@@ -35,10 +35,11 @@ This project supports both **R** and **Python** workflows.
 
 ### 🔄 Option 1: Restore R dependencies directly
 
+••Requires existing renv.lock••
+
 ```bash
 Rscript -e 'renv::restore()'
 ```
-
 ### ⚙️ Option 2: Run the full environment setup (recommended)
 
 ```bash
