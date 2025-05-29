@@ -56,7 +56,7 @@ chmod +x scripts/setup_py_env.sh
 - **R packages** are managed with `renv` and modular installer scripts in `scripts/`.
 - **Python packages** are listed in `requirements.txt` and installed using a virtual environment (`venv/`) created with Python’s built-in `venv` module.
 - Customize:
-  - `scripts/common.R` and `scripts/domain.R` (for R)
+  - `scripts/common.R` and `scripts/gwas.R` (for R)
   - `requirements.txt` (for Python)
 
 ---
