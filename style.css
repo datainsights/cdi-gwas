@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the Header Section */
+#header {
+    background-color:
+    padding: 20px;
+    text-align: center;
+    color: white;
+    font-family: "Arial", sans-serif;
+}
+
+#header h1, #header h2, #header h3 {
+    text-align: center;
+    color: #333;
+}
+
+.summary h3, .summary h3 a {
+    text-align: left;
+    color: #003b4a;
+}
+
+/* Title Styling */
+#header .title {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 5px 0;
+    text-align: center;
+}
+
+/* Subtitle Styling */
+#header .subtitle {
+    font-size: 14px;
+    font-weight: normal;
+    opacity: 0.9;
+    margin: 5px 0;
+    text-align: center;
+    font-style: italic
+    
+}#header .subtitle big {
+    font-size: 18px;
+    font-family: Arial;
+    margin-bottom: 1px;
+}
+
+/* Author Styling */
+#header .author {
+    font-size: 16px;
+    font-style: none;
+    opacity: 0.85;
+    margin: 5px 0;
+}
+
+/* Date Styling */
+#header .date {
+    font-size: 14px;
+    font-style: none;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.book .book-header h1 {
+    font-size: 2.2em;
+    font-weight: bold;
+  }
+  
+  .book .book-header h2 {
+    font-size: 1.6em;
+    color: #444;
+  }
+  
+  /* .book .book-body .page-wrapper .page-inner p:last-of-type {
+    margin-top: 2em;
+    text-align: center;
+    font-style: italic;
+  } */
+
+.infoicon::before, .questionicon::before, .alerticon::before, .arrowicon::before, .tmbinfo::before, .tmbqns::before, .tmbcheck1::before, .tmbcheck2::before, .tmbshare::before, .tmbarrowF::before, .tmb2arrowsF{
+  margin-bottom: 10px;
+}
+/* Styling for info icon */
+.infoicon::before {
+  content: "\f05a";
+  font-family: FontAwesome;
+  font-weight: 900;
+  margin-right: 5px;
+  font-size: 25px;
+}
+
+/* Styling for alert icon */
+.alerticon::before {
+  content: "\f06a";
+  font-family: FontAwesome;
+  font-weight: 900;
+  margin-right: 5px;
+  font-size: 25px;
+}
+
+/* Styling for question icon */
+.questionicon::before {
+  content: "\f128";
+  font-family: FontAwesome;
+  font-weight: 900;
+  margin-right: 5px;
+  font-size: 25px;
+}
+
+/* Styling for right arrow icon */
+.arrowicon::before {
+  content: "\f178";
+  font-family: FontAwesome;
+  font-weight: 900;
+  margin-right: 5px;
+  font-size: 25px;
+}
+
+  
