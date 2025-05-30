@@ -4,10 +4,10 @@ bookdown::gitbook:
   config:
     toc:
       before: |
-        <li><a href="https://datainsights.github.io/cdi-general-ds">Genera Data Science</a></li>
+        <li><a href="https://datainsights.github.io/cdi-gwas">Genome Wide Studies</a></li>
       after: |
         <li><a href="https://complexdatainsights.com/product">Explore More Guides</a></li>
-    edit: https://github.com/datainsights/cdi-general-ds/edit/main/%s
+    edit: https://github.com/datainsights/cdi-gwas/edit/main/%s
     download: ["pdf", "epub"]
 
 bookdown::pdf_book:
