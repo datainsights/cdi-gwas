@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Genomics for Population Health | gwas.knit</title>
+  <title>Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genomics for Population Health | gwas.knit" />
+  <meta property="og:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genomics for Population Health | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-<link rel="next" href="welcome-to-cdi-gwas-for-population-health.html"/>
+<link rel="prev" href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html"/>
+<link rel="next" href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -227,21 +227,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title"><div class="line-block">Genomics for Population Health</div></h1>
-<h2 class="subtitle"><em><p><img src="images/cdi-gwas-cover.png" style="width:75.0%" /><br />
-| Last updated: July 01, 2025</p></em></h2>
+<div id="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Q&A 2</span> How do you prepare a public GWAS dataset for R-based analysis?<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-1" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Explanation<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#explanation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To support reproducible and cross-platform workflows, it’s helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from <a href="http://ricediversity.org/data/sets/44kgwas/">Zhao et al., 2011</a>.</p>
+<p>The script performs the following steps:</p>
+<ul>
+<li>📥 Downloads PLINK-formatted genotype files (<code>.ped</code>, <code>.map</code>, <code>.fam</code>)</li>
+<li>📦 Unzips and flattens the directory structure for easy access</li>
+<li>🏷️ Renames the phenotype file for clarity (<code>sativa413_phenotypes.txt</code>)</li>
+<li>📁 Moves all outputs into a consistent <code>data/</code> directory with a <code>sativa413_</code> prefix</li>
+</ul>
+<p>This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.</p>
+<blockquote>
+<p>✅ <strong>Takeaway:</strong> Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the <code>data/</code> folder under the <code>sativa413_</code> prefix.</p>
+</blockquote>
 </div>
-<div id="section" class="section level1 unnumbered">
-<h1 class="unnumbered"></h1>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="welcome-to-cdi-gwas-for-population-health.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -272,7 +282,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/index.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/03-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {
