@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Genomics for Population Health | gwas.knit</title>
+  <title>Q&A 9 How do you impute missing genotype values before GWAS analysis? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genomics for Population Health | gwas.knit" />
+  <meta property="og:title" content="Q&A 9 How do you impute missing genotype values before GWAS analysis? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genomics for Population Health | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 9 How do you impute missing genotype values before GWAS analysis? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-<link rel="next" href="welcome-to-cdi-gwas-for-population-health.html"/>
+<link rel="prev" href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency-how-do-you-filter-genotype-data-for-missingness-and-minor-allele-frequency.html"/>
+<link rel="next" href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -227,21 +227,64 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title"><div class="line-block">Genomics for Population Health</div></h1>
-<h2 class="subtitle"><em><p><img src="images/cdi-gwas-cover.png" style="width:75.0%" /><br />
-| Last updated: July 01, 2025</p></em></h2>
+<div id="how-do-you-impute-missing-genotype-values-before-gwas-analysis" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Q&A 9</span> How do you impute missing genotype values before GWAS analysis?<a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#how-do-you-impute-missing-genotype-values-before-gwas-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-8" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Explanation<a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#explanation-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Many GWAS and population structure methods (like PCA or kinship matrix computation) require complete genotype matrices. If you have filtered for missingness but still have a few <code>NA</code> values, a simple approach is to impute missing genotypes using the <strong>mean dosage</strong> for each SNP.</p>
+<p>This is fast, reproducible, and good enough for visualization and many linear models.</p>
 </div>
-<div id="section" class="section level1 unnumbered">
-<h1 class="unnumbered"></h1>
+<div id="r-code-6" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> R Code<a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#r-code-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-1" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb39-2"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb39-3"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-3" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-4" tabindex="-1"></a><span class="co"># Step 1: Extract dosage matrix (without FID/IID)</span></span>
+<span id="cb39-5"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-5" tabindex="-1"></a>dosage_matrix <span class="ot">&lt;-</span> filtered_geno[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)]</span>
+<span id="cb39-6"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-6" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-7" tabindex="-1"></a><span class="co"># Step 2: Impute missing values using column means</span></span>
+<span id="cb39-8"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-8" tabindex="-1"></a>imputed_matrix <span class="ot">&lt;-</span> dosage_matrix <span class="sc">%&gt;%</span></span>
+<span id="cb39-9"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-9" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(.), <span class="fu">mean</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), .)))</span>
+<span id="cb39-10"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-10" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-11" tabindex="-1"></a><span class="co"># Step 3: Add back FID and IID</span></span>
+<span id="cb39-12"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-12" tabindex="-1"></a>geno_imputed <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(filtered_geno[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], imputed_matrix)</span>
+<span id="cb39-13"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-13" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-14" tabindex="-1"></a><span class="co"># Step 4: Preview</span></span>
+<span id="cb39-15"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb39-15" tabindex="-1"></a><span class="fu">head</span>(geno_imputed[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
+<pre><code># A tibble: 6 × 5
+  X1            X2 id1000007 id1000051 id1000080
+  &lt;chr&gt;      &lt;dbl&gt;     &lt;int&gt;     &lt;int&gt;     &lt;int&gt;
+1 081215-A05     1         0         0         0
+2 081215-A06     3         2         0         2
+3 081215-A07     4         2         0         2
+4 081215-A08     5         0         0         2
+5 090414-A09     6         2         0         2
+6 090414-A10     7         0         0         0</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html#cb41-1" tabindex="-1"></a><span class="fu">glimpse</span>(geno_imputed[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span></code></pre></div>
+<pre><code>Rows: 5
+Columns: 10
+$ X1        &lt;chr&gt; &quot;081215-A05&quot;, &quot;081215-A06&quot;, &quot;081215-A07&quot;, &quot;081215-A08&quot;, &quot;090…
+$ X2        &lt;dbl&gt; 1, 3, 4, 5, 6
+$ id1000007 &lt;int&gt; 0, 2, 2, 0, 2
+$ id1000051 &lt;int&gt; 0, 0, 0, 0, 0
+$ id1000080 &lt;int&gt; 0, 2, 2, 2, 2
+$ id1000091 &lt;int&gt; 0, 2, 2, 0, 2
+$ id1000093 &lt;int&gt; 0, 2, 2, 2, 2
+$ id1000115 &lt;int&gt; 0, 0, 0, 2, 0
+$ ud1000033 &lt;dbl&gt; 0, 0, 0, 0, 0
+$ id1000264 &lt;int&gt; 0, 2, 0, 0, 0</code></pre>
+<blockquote>
+<p>✅ <strong>Takeaway:</strong> Simple mean imputation fills missing genotype values efficiently. It’s suitable for PCA, kinship, and linear models when high accuracy isn’t critical or when advanced imputation isn’t available.</p>
+</blockquote>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="welcome-to-cdi-gwas-for-population-health.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency-how-do-you-filter-genotype-data-for-missingness-and-minor-allele-frequency.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -272,7 +315,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/index.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/03-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

@@ -26,10 +26,13 @@ viz-gitbook/
 stats-gitbook/
 ml-gitbook/
 
+*.pdf
+
 # Images and data
 data/
 images/
 !docs/images/
+REFER/
 
 # Intermediate and cache files
 *.utf8.md

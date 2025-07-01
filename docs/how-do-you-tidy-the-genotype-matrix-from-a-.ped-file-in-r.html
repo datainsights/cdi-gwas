@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Genomics for Population Health | gwas.knit</title>
+  <title>Q&A 6 How do you tidy the genotype matrix from a .ped file in R? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genomics for Population Health | gwas.knit" />
+  <meta property="og:title" content="Q&A 6 How do you tidy the genotype matrix from a .ped file in R? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genomics for Population Health | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 6 How do you tidy the genotype matrix from a .ped file in R? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-<link rel="next" href="welcome-to-cdi-gwas-for-population-health.html"/>
+<link rel="prev" href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html"/>
+<link rel="next" href="how-do-you-recode-allele-strings-into-numeric-count-format-for-gwas.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -227,21 +227,82 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title"><div class="line-block">Genomics for Population Health</div></h1>
-<h2 class="subtitle"><em><p><img src="images/cdi-gwas-cover.png" style="width:75.0%" /><br />
-| Last updated: July 01, 2025</p></em></h2>
+<div id="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Q&A 6</span> How do you tidy the genotype matrix from a <code>.ped</code> file in R?<a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-5" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Explanation<a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#explanation-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>PLINK <code>.ped</code> files store genotype data in a wide format, where each SNP is represented by <strong>two columns per individual</strong> (one for each allele). This structure is inefficient for downstream analysis, so we convert it to a <strong>tidy format</strong> where:</p>
+<ul>
+<li>Each row represents one sample</li>
+<li>Each column represents one SNP</li>
+<li>Alleles are combined (e.g., <code>"A A"</code>, <code>"A G"</code>, <code>"G G"</code>)</li>
+</ul>
+<p>We also use SNP metadata from the <code>.map</code> file — now consistently referred to as <code>snp_info</code> — to label the columns.</p>
 </div>
-<div id="section" class="section level1 unnumbered">
-<h1 class="unnumbered"></h1>
+<div id="r-code-3" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> R Code<a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#r-code-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-1" tabindex="-1"></a><span class="co"># Load necessary library</span></span>
+<span id="cb27-2"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb27-3"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-3" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-4" tabindex="-1"></a><span class="co"># Step 1: Load genotype and SNP info (if not already in memory)</span></span>
+<span id="cb27-5"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-5" tabindex="-1"></a>ped_data <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">&quot;data/sativa413.rds&quot;</span>)</span>
+<span id="cb27-6"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-6" tabindex="-1"></a>snp_info <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativas413.map&quot;</span>, </span>
+<span id="cb27-7"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-7" tabindex="-1"></a>                       <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;chr&quot;</span>, <span class="st">&quot;snp_id&quot;</span>, <span class="st">&quot;gen_dist&quot;</span>, <span class="st">&quot;bp_pos&quot;</span>), </span>
+<span id="cb27-8"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-8" tabindex="-1"></a>                       <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-9"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-9" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-10" tabindex="-1"></a><span class="co"># Step 2: Separate sample IDs and genotype calls</span></span>
+<span id="cb27-11"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-11" tabindex="-1"></a>sample_ids <span class="ot">&lt;-</span> ped_data[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]              <span class="co"># FID and IID</span></span>
+<span id="cb27-12"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-12" tabindex="-1"></a>genotype_matrix <span class="ot">&lt;-</span> ped_data[, <span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)]      <span class="co"># Alleles only</span></span>
+<span id="cb27-13"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-13" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-14" tabindex="-1"></a><span class="co"># Step 3: Verify expected SNP count</span></span>
+<span id="cb27-15"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-15" tabindex="-1"></a>n_snps <span class="ot">&lt;-</span> <span class="fu">ncol</span>(genotype_matrix) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb27-16"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-16" tabindex="-1"></a><span class="fu">stopifnot</span>(n_snps <span class="sc">==</span> <span class="fu">nrow</span>(snp_info))</span>
+<span id="cb27-17"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-17" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-18" tabindex="-1"></a><span class="co"># Step 4: Combine each pair of allele columns into genotype strings</span></span>
+<span id="cb27-19"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-19" tabindex="-1"></a>genotype_calls <span class="ot">&lt;-</span> <span class="fu">map_dfc</span>(<span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">ncol</span>(genotype_matrix), <span class="at">by =</span> <span class="dv">2</span>), <span class="cf">function</span>(i) {</span>
+<span id="cb27-20"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-20" tabindex="-1"></a>  <span class="fu">paste</span>(genotype_matrix[[i]], genotype_matrix[[i <span class="sc">+</span> <span class="dv">1</span>]])</span>
+<span id="cb27-21"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-21" tabindex="-1"></a>})</span>
+<span id="cb27-22"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-22" tabindex="-1"></a><span class="fu">names</span>(genotype_calls) <span class="ot">&lt;-</span> snp_info<span class="sc">$</span>snp_id  <span class="co"># Use SNP IDs as column names</span></span>
+<span id="cb27-23"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-23" tabindex="-1"></a></span>
+<span id="cb27-24"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-24" tabindex="-1"></a><span class="co"># Step 5: Combine with sample IDs</span></span>
+<span id="cb27-25"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-25" tabindex="-1"></a>genotype_tidy <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(sample_ids, genotype_calls)</span>
+<span id="cb27-26"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-26" tabindex="-1"></a></span>
+<span id="cb27-27"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-27" tabindex="-1"></a><span class="co"># Step 6: Preview output</span></span>
+<span id="cb27-28"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb27-28" tabindex="-1"></a><span class="fu">head</span>(genotype_tidy[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])  <span class="co"># Show FID, IID, and first 8 SNPs</span></span></code></pre></div>
+<pre><code># A tibble: 6 × 5
+  X1            X2 id1000001 id1000003 id1000005
+  &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;    
+1 081215-A05     1 T T       T T       C C      
+2 081215-A06     3 C C       C C       C C      
+3 081215-A07     4 C C       C C       C C      
+4 081215-A08     5 C C       C C       T T      
+5 090414-A09     6 C C       C C       C C      
+6 090414-A10     7 T T       T T       C C      </code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html#cb29-1" tabindex="-1"></a><span class="fu">glimpse</span>(genotype_tidy[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])  <span class="co"># Show FID, IID, and first 8 SNPs</span></span></code></pre></div>
+<pre><code>Rows: 5
+Columns: 10
+$ X1        &lt;chr&gt; &quot;081215-A05&quot;, &quot;081215-A06&quot;, &quot;081215-A07&quot;, &quot;081215-A08&quot;, &quot;090…
+$ X2        &lt;dbl&gt; 1, 3, 4, 5, 6
+$ id1000001 &lt;chr&gt; &quot;T T&quot;, &quot;C C&quot;, &quot;C C&quot;, &quot;C C&quot;, &quot;C C&quot;
+$ id1000003 &lt;chr&gt; &quot;T T&quot;, &quot;C C&quot;, &quot;C C&quot;, &quot;C C&quot;, &quot;C C&quot;
+$ id1000005 &lt;chr&gt; &quot;C C&quot;, &quot;C C&quot;, &quot;C C&quot;, &quot;T T&quot;, &quot;C C&quot;
+$ id1000007 &lt;chr&gt; &quot;G G&quot;, &quot;A A&quot;, &quot;A A&quot;, &quot;G G&quot;, &quot;A A&quot;
+$ id1000008 &lt;chr&gt; &quot;T T&quot;, &quot;G G&quot;, &quot;G G&quot;, &quot;G G&quot;, &quot;G G&quot;
+$ id1000011 &lt;chr&gt; &quot;A A&quot;, &quot;0 0&quot;, &quot;G G&quot;, &quot;A A&quot;, &quot;G G&quot;
+$ id1000013 &lt;chr&gt; &quot;C C&quot;, &quot;C C&quot;, &quot;C C&quot;, &quot;T T&quot;, &quot;C C&quot;
+$ id1000015 &lt;chr&gt; &quot;T T&quot;, &quot;G G&quot;, &quot;G G&quot;, &quot;G G&quot;, &quot;G G&quot;</code></pre>
+<blockquote>
+<p>✅ <strong>Takeaway:</strong> Tidying <code>.ped</code> genotype data into a clean sample-by-SNP format makes it much easier to analyze, visualize, or convert to numeric dosages. Use <code>snp_info</code> consistently as the SNP metadata reference to avoid conflicts.</p>
+</blockquote>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="welcome-to-cdi-gwas-for-population-health.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-recode-allele-strings-into-numeric-count-format-for-gwas.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -272,7 +333,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/index.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/03-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

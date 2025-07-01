@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Genomics for Population Health | gwas.knit</title>
+  <title>Q&A 5 How do you inspect the structure and contents of GWAS input files in R? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genomics for Population Health | gwas.knit" />
+  <meta property="og:title" content="Q&A 5 How do you inspect the structure and contents of GWAS input files in R? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genomics for Population Health | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 5 How do you inspect the structure and contents of GWAS input files in R? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-<link rel="next" href="welcome-to-cdi-gwas-for-population-health.html"/>
+<link rel="prev" href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html"/>
+<link rel="next" href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -227,21 +227,86 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title"><div class="line-block">Genomics for Population Health</div></h1>
-<h2 class="subtitle"><em><p><img src="images/cdi-gwas-cover.png" style="width:75.0%" /><br />
-| Last updated: July 01, 2025</p></em></h2>
+<div id="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Q&A 5</span> How do you inspect the structure and contents of GWAS input files in R?<a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-4" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Explanation<a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#explanation-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Before analysis, it’s essential to preview each file to check:</p>
+<ul>
+<li>Row and column dimensions</li>
+<li>Sample ID consistency</li>
+<li>General format of genotype and phenotype data</li>
+</ul>
+<p>This ensures everything is aligned before tidying or merging.</p>
 </div>
-<div id="section" class="section level1 unnumbered">
-<h1 class="unnumbered"></h1>
+<div id="r-code-2" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> R Code<a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#r-code-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb11-1" tabindex="-1"></a><span class="co"># Load genotype file (if needed)</span></span>
+<span id="cb11-2"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb11-2" tabindex="-1"></a>ped_data <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">&quot;data/sativa413.rds&quot;</span>)</span>
+<span id="cb11-3"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb11-4" tabindex="-1"></a><span class="co"># Check size of each file</span></span>
+<span id="cb11-5"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb11-5" tabindex="-1"></a><span class="fu">dim</span>(ped_data)         <span class="co"># Genotype matrix</span></span></code></pre></div>
+<pre><code>[1]   413 73808</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb13-1" tabindex="-1"></a><span class="fu">dim</span>(map_data)         <span class="co"># SNP metadata</span></span></code></pre></div>
+<pre><code>[1] 36901     4</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb15-1" tabindex="-1"></a><span class="fu">dim</span>(fam_data)         <span class="co"># Sample info</span></span></code></pre></div>
+<pre><code>[1] 413   6</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb17-1" tabindex="-1"></a><span class="fu">dim</span>(phenotype_data)   <span class="co"># Trait info</span></span></code></pre></div>
+<pre><code>[1] 413  38</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb19-1" tabindex="-1"></a><span class="co"># Preview first few rows and columns</span></span>
+<span id="cb19-2"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb19-2" tabindex="-1"></a><span class="fu">head</span>(ped_data[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])        <span class="co"># First 5 genotype columns (show alleles)</span></span></code></pre></div>
+<pre><code># A tibble: 6 × 5
+  X1            X2    X3    X4    X5
+  &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 081215-A05     1     0     0    -9
+2 081215-A06     3     0     0    -9
+3 081215-A07     4     0     0    -9
+4 081215-A08     5     0     0    -9
+5 090414-A09     6     0     0    -9
+6 090414-A10     7     0     0    -9</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb21-1" tabindex="-1"></a><span class="fu">head</span>(map_data)</span></code></pre></div>
+<pre><code># A tibble: 6 × 4
+    chr snp_id    gen_dist bp_pos
+  &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+1     1 id1000001        0  13147
+2     1 id1000003        0  73192
+3     1 id1000005        0  74969
+4     1 id1000007        0  75852
+5     1 id1000008        0  75953
+6     1 id1000011        0  91016</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb23-1" tabindex="-1"></a><span class="fu">head</span>(fam_data[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
+<pre><code># A tibble: 6 × 5
+  FID          IID   PID   MID   sex
+  &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 081215-A05     1     0     0    -9
+2 081215-A06     3     0     0    -9
+3 081215-A07     4     0     0    -9
+4 081215-A08     5     0     0    -9
+5 090414-A09     6     0     0    -9
+6 090414-A10     7     0     0    -9</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="how-do-you-inspect-the-structure-and-contents-of-gwas-input-files-in-r.html#cb25-1" tabindex="-1"></a><span class="fu">head</span>(phenotype_data[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
+<pre><code># A tibble: 6 × 5
+  HybID      NSFTVID `Flowering time at Arkansas` `Flowering time at Faridpur`
+  &lt;chr&gt;        &lt;dbl&gt;                        &lt;dbl&gt;                        &lt;dbl&gt;
+1 081215-A05       1                         75.1                           64
+2 081215-A06       3                         89.5                           66
+3 081215-A07       4                         94.5                           67
+4 081215-A08       5                         87.5                           70
+5 090414-A09       6                         89.1                           73
+6 090414-A10       7                        105                             NA
+# ℹ 1 more variable: `Flowering time at Aberdeen` &lt;dbl&gt;</code></pre>
+<blockquote>
+<p>✅ <strong>Takeaway:</strong> Use <code>dim()</code> and <code>head()</code> to quickly check file structure and confirm that samples and traits align before transforming or analyzing GWAS data.</p>
+</blockquote>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="welcome-to-cdi-gwas-for-population-health.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-tidy-the-genotype-matrix-from-a-.ped-file-in-r.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -272,7 +337,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/index.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/03-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

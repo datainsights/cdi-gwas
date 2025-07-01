@@ -1,0 +1,48 @@
+---
+title: |
+  | Genomics for Population Health
+subtitle: |
+  ![](images/cdi-gwas-cover.png){width=75%}  
+  | Last updated: `r format(Sys.Date(), "%B %d, %Y")` 
+knit: bookdown::render_book
+site: bookdown::bookdown_site
+documentclass: book
+csl: 
+  - library/apa.csl
+bibliography:
+  - library/references.bib
+classoption: openany
+citation_package:
+  - natbib
+  - biblatex
+  - amsplain
+colorlinks: yes
+css: 
+  - style.css
+always_allow_html: yes
+fig_caption: yes
+fontsize: 12pt
+geometry: margin=1in
+indent: no
+keep_tex: yes
+link-citations: yes
+mainfont: Times New Roman
+biblio-style: apalike
+spacing: double
+pandoc_args: ["--variable=linestretch:2"]
+description:
+github-repo: "https://github.com/datainsights/cdi-gwas/"
+favicon: "favicon.ico"
+---
+
+#  {-}
+
+# 🌱 Welcome to the RNA-Seq Q&A Guide {-}
+
+This guide is your hands-on companion for learning and applying RNA sequencing (RNA-Seq) data analysis — one question at a time.
+
+You'll explore each step of the RNA-Seq pipeline using real tools, reproducible workflows, and well-commented code. From quality control and quantification to differential expression and biological interpretation, this guide shows how scripting, statistics, and bioinformatics come together in practice.
+
+Whether you’re a student, researcher, or self-taught enthusiast, you’ll gain confidence using Python, R, shell scripting, and reproducible workflows — including tools like **DESeq2**, **Salmon**, **edgeR**, **FastQC**, **Snakemake**, and more.
+
+Each Q&A includes a clear explanation, relevant code in both Python and R when applicable, and builds toward real-world problem solving. You're not just learning RNA-Seq — you're learning to think like a modern data-driven bioinformatician.

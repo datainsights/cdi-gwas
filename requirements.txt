@@ -2,3 +2,6 @@ pandas
 matplotlib
 seaborn
 scikit-learn
+jupytext  # Added for Rmd <-> ipynb conversions
+jupyterlab  # Optional: for running and viewing notebooks
+matplotlib_venn

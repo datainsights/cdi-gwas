@@ -1,4 +1,4 @@
-book_filename: "ml"
+book_filename: "gwas"
 before_chapter_script: ["scripts/_setup.R"]
 delete_merged_file: yes
 
@@ -8,9 +8,6 @@ language:
 
 rmd_files:
   - index.Rmd
-  - 02-1-eda.Rmd
-  - 02-2-viz.Rmd
-  - 02-3-stats.Rmd
-  - 02-4-ml.Rmd
-  - 99-appendix.Rmd
+  - 03-1-gwas.Rmd
+
 

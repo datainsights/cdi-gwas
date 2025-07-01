@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Genomics for Population Health | gwas.knit</title>
+  <title>Q&A 10 How do you perform PCA on genotype data to assess population structure? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genomics for Population Health | gwas.knit" />
+  <meta property="og:title" content="Q&A 10 How do you perform PCA on genotype data to assess population structure? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genomics for Population Health | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 10 How do you perform PCA on genotype data to assess population structure? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-<link rel="next" href="welcome-to-cdi-gwas-for-population-health.html"/>
+<link rel="prev" href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html"/>
+<link rel="next" href="how-do-you-include-pca-covariates-in-a-gwas-model.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -227,21 +227,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title"><div class="line-block">Genomics for Population Health</div></h1>
-<h2 class="subtitle"><em><p><img src="images/cdi-gwas-cover.png" style="width:75.0%" /><br />
-| Last updated: July 01, 2025</p></em></h2>
+<div id="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">Q&A 10</span> How do you perform PCA on genotype data to assess population structure?<a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#how-do-you-perform-pca-on-genotype-data-to-assess-population-structure" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-9" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> Explanation<a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#explanation-9" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>PCA (Principal Component Analysis) is a standard method to explore genetic diversity and detect hidden population structure in GWAS datasets. It helps:</p>
+<ul>
+<li>Control for confounding due to stratification<br />
+</li>
+<li>Visualize sample clusters or outliers<br />
+</li>
+<li>Generate covariates (<code>PC1</code>, <code>PC2</code>, etc.) for use in association models</li>
+</ul>
+<p>We apply PCA on the <strong>imputed genotype dosage matrix</strong>, excluding identifier columns (<code>FID</code>, <code>IID</code>), and then combine the results with sample IDs.</p>
 </div>
-<div id="section" class="section level1 unnumbered">
-<h1 class="unnumbered"></h1>
+<div id="r-code-7" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> R Code<a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#r-code-7" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-1" tabindex="-1"></a><span class="co"># Load libraries</span></span>
+<span id="cb43-2"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb43-3"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-3" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-4" tabindex="-1"></a><span class="co"># Step 1: Extract genotype matrix (exclude FID and IID)</span></span>
+<span id="cb43-5"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-5" tabindex="-1"></a>geno_numeric <span class="ot">&lt;-</span> geno_imputed[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)]</span>
+<span id="cb43-6"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-6" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-7" tabindex="-1"></a><span class="co"># Step 2: Perform PCA using prcomp</span></span>
+<span id="cb43-8"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-8" tabindex="-1"></a>pca_result <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(geno_numeric, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-9"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-9" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-10" tabindex="-1"></a><span class="co"># Step 3: Combine first 5 PCs with sample IDs</span></span>
+<span id="cb43-11"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-11" tabindex="-1"></a>pca_df <span class="ot">&lt;-</span> geno_imputed[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">%&gt;%</span>  <span class="co"># FID and IID</span></span>
+<span id="cb43-12"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-12" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="fu">as_tibble</span>(pca_result<span class="sc">$</span>x[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]))  <span class="co"># PC1 to PC5</span></span>
+<span id="cb43-13"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-13" tabindex="-1"></a></span>
+<span id="cb43-14"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-14" tabindex="-1"></a><span class="co"># Step 4: Plot PC1 vs PC2</span></span>
+<span id="cb43-15"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-15" tabindex="-1"></a><span class="fu">ggplot</span>(pca_df, <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2)) <span class="sc">+</span></span>
+<span id="cb43-16"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-16" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb43-17"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;PCA of Genotype Data&quot;</span>, <span class="at">x =</span> <span class="st">&quot;PC1&quot;</span>, <span class="at">y =</span> <span class="st">&quot;PC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb43-18"><a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html#cb43-18" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="gwas_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<blockquote>
+<p>✅ <strong>Takeaway:</strong> PCA helps uncover hidden structure in your GWAS population. Always reattach <code>FID</code> and <code>IID</code> to PCA scores so they can be merged with phenotype and genotype metadata for downstream modeling.</p>
+</blockquote>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="welcome-to-cdi-gwas-for-population-health.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-include-pca-covariates-in-a-gwas-model.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -272,7 +304,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/index.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/03-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

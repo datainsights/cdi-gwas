@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Genomics for Population Health | gwas.knit</title>
+  <title>Q&A 11 How do you include PCA covariates in a GWAS model? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genomics for Population Health | gwas.knit" />
+  <meta property="og:title" content="Q&A 11 How do you include PCA covariates in a GWAS model? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genomics for Population Health | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 11 How do you include PCA covariates in a GWAS model? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-<link rel="next" href="welcome-to-cdi-gwas-for-population-health.html"/>
+<link rel="prev" href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html"/>
+<link rel="next" href="how-do-you-interpret-gwas-model-results-with-pca-covariates.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -227,21 +227,88 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title"><div class="line-block">Genomics for Population Health</div></h1>
-<h2 class="subtitle"><em><p><img src="images/cdi-gwas-cover.png" style="width:75.0%" /><br />
-| Last updated: July 01, 2025</p></em></h2>
+<div id="how-do-you-include-pca-covariates-in-a-gwas-model" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Q&A 11</span> How do you include PCA covariates in a GWAS model?<a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#how-do-you-include-pca-covariates-in-a-gwas-model" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-10" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Explanation<a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#explanation-10" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To reduce false positives caused by hidden genetic structure, it’s standard in GWAS to include the top principal components (PCs) as covariates in the model. These PCs come from PCA applied to the genotype matrix and must be matched back to each sample using the same identifiers (<code>FID</code>, <code>IID</code>).</p>
+<p>This Q&amp;A walks through the process of combining phenotype, PCA, and genotype data, then fitting a single SNP-trait association model.</p>
 </div>
-<div id="section" class="section level1 unnumbered">
-<h1 class="unnumbered"></h1>
+<div id="r-code-8" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> R Code<a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#r-code-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-1" tabindex="-1"></a><span class="co"># Load libraries</span></span>
+<span id="cb44-2"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb44-3"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-3" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-4" tabindex="-1"></a><span class="co"># Step 1: Load and align phenotype data with sample metadata (by FID)</span></span>
+<span id="cb44-5"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-5" tabindex="-1"></a>fam_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativas413.fam&quot;</span>, </span>
+<span id="cb44-6"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-6" tabindex="-1"></a>                       <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;FID&quot;</span>, <span class="st">&quot;IID&quot;</span>, <span class="st">&quot;PID&quot;</span>, <span class="st">&quot;MID&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;phenotype&quot;</span>), </span>
+<span id="cb44-7"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-7" tabindex="-1"></a>                       <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb44-8"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-8" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-9" tabindex="-1"></a>phenotype_data <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/sativa413_phenotypes.txt&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb44-10"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-10" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">FID =</span> <span class="dv">1</span>)  <span class="co"># Sample IDs in phenotype file match fam_data$FID</span></span>
+<span id="cb44-11"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-11" tabindex="-1"></a></span>
+<span id="cb44-12"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-12" tabindex="-1"></a>sample_metadata <span class="ot">&lt;-</span> <span class="fu">left_join</span>(fam_data, phenotype_data, <span class="at">by =</span> <span class="st">&quot;FID&quot;</span>)</span>
+<span id="cb44-13"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-13" tabindex="-1"></a></span>
+<span id="cb44-14"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-14" tabindex="-1"></a><span class="co"># Step 2: Rename PCA columns to include proper IDs</span></span>
+<span id="cb44-15"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-15" tabindex="-1"></a>pca_df <span class="ot">&lt;-</span> pca_df <span class="sc">%&gt;%</span></span>
+<span id="cb44-16"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-16" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">FID =</span> <span class="dv">1</span>, <span class="at">IID =</span> <span class="dv">2</span>)</span>
+<span id="cb44-17"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-17" tabindex="-1"></a></span>
+<span id="cb44-18"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-18" tabindex="-1"></a><span class="co"># Step 3: Merge PCA data into sample metadata</span></span>
+<span id="cb44-19"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-19" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(sample_metadata, pca_df, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;FID&quot;</span>, <span class="st">&quot;IID&quot;</span>))</span>
+<span id="cb44-20"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-20" tabindex="-1"></a></span>
+<span id="cb44-21"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-21" tabindex="-1"></a><span class="co"># Step 4: Standardize ID columns in genotype data</span></span>
+<span id="cb44-22"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-22" tabindex="-1"></a>geno_imputed <span class="ot">&lt;-</span> geno_imputed <span class="sc">%&gt;%</span></span>
+<span id="cb44-23"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-23" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">FID =</span> <span class="dv">1</span>, <span class="at">IID =</span> <span class="dv">2</span>)</span>
+<span id="cb44-24"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-24" tabindex="-1"></a></span>
+<span id="cb44-25"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-25" tabindex="-1"></a><span class="co"># Step 5: Merge genotype with metadata</span></span>
+<span id="cb44-26"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-26" tabindex="-1"></a>geno_data <span class="ot">&lt;-</span> geno_imputed[, <span class="sc">-</span><span class="dv">1</span>]  <span class="co"># Drop FID, keep IID and SNPs</span></span>
+<span id="cb44-27"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-27" tabindex="-1"></a>gwas_input <span class="ot">&lt;-</span> <span class="fu">left_join</span>(sample_data, geno_data, <span class="at">by =</span> <span class="st">&quot;IID&quot;</span>)</span>
+<span id="cb44-28"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-28" tabindex="-1"></a></span>
+<span id="cb44-29"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-29" tabindex="-1"></a><span class="co"># Step 6: Select trait and covariates</span></span>
+<span id="cb44-30"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-30" tabindex="-1"></a>trait <span class="ot">&lt;-</span> <span class="st">&quot;Plant height&quot;</span>  <span class="co"># Use the column name as a string</span></span>
+<span id="cb44-31"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-31" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;PC1&quot;</span>, <span class="st">&quot;PC2&quot;</span>, <span class="st">&quot;PC3&quot;</span>)</span>
+<span id="cb44-32"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-32" tabindex="-1"></a></span>
+<span id="cb44-33"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-33" tabindex="-1"></a><span class="co"># Step 7: Construct the model formula</span></span>
+<span id="cb44-34"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-34" tabindex="-1"></a>snp_name <span class="ot">&lt;-</span> <span class="fu">names</span>(geno_data)[<span class="dv">2</span>]  <span class="co"># Replace with desired SNP</span></span>
+<span id="cb44-35"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-35" tabindex="-1"></a>formula_str <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;`&quot;</span>, trait, <span class="st">&quot;` ~ &quot;</span>, snp_name, <span class="st">&quot; + &quot;</span>, <span class="fu">paste</span>(covariates, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>))</span>
+<span id="cb44-36"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-36" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">as.formula</span>(formula_str), <span class="at">data =</span> gwas_input)</span>
+<span id="cb44-37"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-37" tabindex="-1"></a></span>
+<span id="cb44-38"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-38" tabindex="-1"></a><span class="co"># Step 8: View model summary</span></span>
+<span id="cb44-39"><a href="how-do-you-include-pca-covariates-in-a-gwas-model.html#cb44-39" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div>
+<pre><code>
+Call:
+lm(formula = as.formula(formula_str), data = gwas_input)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-54.024 -12.429  -0.346  11.594  76.555 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 115.83448    1.04707 110.627  &lt; 2e-16 ***
+id1000007     2.17767    1.54100   1.413    0.158    
+PC1           0.20502    0.02761   7.426 7.49e-13 ***
+PC2          -0.19534    0.04436  -4.404 1.39e-05 ***
+PC3          -0.29738    0.07399  -4.019 7.05e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 18.63 on 378 degrees of freedom
+  (30 observations deleted due to missingness)
+Multiple R-squared:  0.2277,    Adjusted R-squared:  0.2195 
+F-statistic: 27.86 on 4 and 378 DF,  p-value: &lt; 2.2e-16</code></pre>
+<blockquote>
+<p>✅ <strong>Takeaway:</strong> Always ensure PCA scores include correctly labeled <code>FID</code> and <code>IID</code> so they can be merged with metadata and genotype matrices before fitting GWAS models.</p>
+</blockquote>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="welcome-to-cdi-gwas-for-population-health.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-perform-pca-on-genotype-data-to-assess-population-structure.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-interpret-gwas-model-results-with-pca-covariates.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -272,7 +339,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/index.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/03-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {
