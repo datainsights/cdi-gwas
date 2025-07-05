@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit</title>
+  <title>Q&A 15 How do you create a Manhattan plot from GWAS results using the qqman package? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta property="og:title" content="Q&A 15 How do you create a Manhattan plot from GWAS results using the qqman package? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 15 How do you create a Manhattan plot from GWAS results using the qqman package? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="prev" href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html"/>
-<link rel="next" href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html"/>
+<link rel="prev" href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html"/>
+<link rel="next" href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -268,21 +268,59 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Q&A 2</span> How do you prepare a public GWAS dataset for R-based analysis?<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="explanation-1" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Explanation<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#explanation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To support reproducible and cross-platform workflows, it’s helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from <a href="http://ricediversity.org/data/sets/44kgwas/">Zhao et al., 2011</a>.</p>
-<p>The script performs the following steps:</p>
+<div id="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package" class="section level1 hasAnchor" number="15">
+<h1><span class="header-section-number">Q&A 15</span> How do you create a Manhattan plot from GWAS results using the <code>qqman</code> package?<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-14" class="section level2 hasAnchor" number="15.1">
+<h2><span class="header-section-number">15.1</span> Explanation<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#explanation-14" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>qqman</code> package provides a convenient way to create Manhattan plots directly from GWAS result tables. A Manhattan plot displays each SNP’s –log10(p-value) along its genomic position, helping identify regions with strong associations.</p>
+<p>The function <code>manhattan()</code> expects a data frame with these key columns:</p>
 <ul>
-<li>📥 Downloads PLINK-formatted genotype files (<code>.ped</code>, <code>.map</code>, <code>.fam</code>)</li>
-<li>📦 Unzips and flattens the directory structure for easy access</li>
-<li>🏷️ Renames the phenotype file for clarity (<code>sativa413_phenotypes.txt</code>)</li>
-<li>📁 Moves all outputs into a consistent <code>data/</code> directory with a <code>sativa413_</code> prefix</li>
+<li><code>CHR</code>: Chromosome number<br />
+</li>
+<li><code>BP</code>: Base-pair position<br />
+</li>
+<li><code>SNP</code>: SNP identifier<br />
+</li>
+<li><code>P</code>: P-value from the association test</li>
 </ul>
-<p>This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.</p>
+<p>You can prepare this by merging your GWAS result table with a <code>.map</code> file containing SNP positions.</p>
+</div>
+<div id="r-code-11" class="section level2 hasAnchor" number="15.2">
+<h2><span class="header-section-number">15.2</span> R Code<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#r-code-11" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb53-2"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb53-3"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-3" tabindex="-1"></a><span class="fu">library</span>(qqman)</span>
+<span id="cb53-4"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-4" tabindex="-1"></a></span>
+<span id="cb53-5"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-5" tabindex="-1"></a><span class="co"># Step 1: Load GWAS results</span></span>
+<span id="cb53-6"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-6" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/gwas_results.csv&quot;</span>)</span>
+<span id="cb53-7"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-7" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-8" tabindex="-1"></a><span class="co"># Step 2: Load SNP position data (.map file)</span></span>
+<span id="cb53-9"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-9" tabindex="-1"></a>map_df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/sativa413.map&quot;</span>, </span>
+<span id="cb53-10"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-10" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;CHR&quot;</span>, <span class="st">&quot;SNP&quot;</span>, <span class="st">&quot;GEN_DIST&quot;</span>, <span class="st">&quot;BP&quot;</span>),</span>
+<span id="cb53-11"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-11" tabindex="-1"></a>                   <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb53-12"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-12" tabindex="-1"></a></span>
+<span id="cb53-13"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-13" tabindex="-1"></a><span class="co"># Step 3: Merge results with map data</span></span>
+<span id="cb53-14"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-14" tabindex="-1"></a>gwas_annotated <span class="ot">&lt;-</span> <span class="fu">left_join</span>(gwas_df, map_df, <span class="at">by =</span> <span class="st">&quot;SNP&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb53-15"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-15" tabindex="-1"></a>  <span class="fu">select</span>(SNP, CHR, BP, <span class="at">P =</span> P_value) <span class="sc">%&gt;%</span></span>
+<span id="cb53-16"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-16" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb53-17"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-17" tabindex="-1"></a></span>
+<span id="cb53-18"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-18" tabindex="-1"></a><span class="co"># Step 4: Create Manhattan plot using qqman</span></span>
+<span id="cb53-19"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-19" tabindex="-1"></a><span class="fu">manhattan</span>(gwas_annotated,</span>
+<span id="cb53-20"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-20" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">&quot;Manhattan Plot of GWAS Results&quot;</span>,</span>
+<span id="cb53-21"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-21" tabindex="-1"></a>          <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;grey30&quot;</span>, <span class="st">&quot;dodgerblue&quot;</span>),</span>
+<span id="cb53-22"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-22" tabindex="-1"></a>          <span class="at">cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb53-23"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-23" tabindex="-1"></a>          <span class="at">cex.axis =</span> <span class="fl">0.9</span>,</span>
+<span id="cb53-24"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb53-24" tabindex="-1"></a>          <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="gwas_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb54-1" tabindex="-1"></a><span class="fu">manhattan</span>(gwas_annotated,</span>
+<span id="cb54-2"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb54-2" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">&quot;Manhattan Plot of GWAS Results&quot;</span>,</span>
+<span id="cb54-3"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb54-3" tabindex="-1"></a>          <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;#003b4a&quot;</span>, <span class="st">&quot;dodgerblue&quot;</span>),</span>
+<span id="cb54-4"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb54-4" tabindex="-1"></a>          <span class="at">cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb54-5"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb54-5" tabindex="-1"></a>          <span class="at">cex.axis =</span> <span class="fl">0.9</span>,</span>
+<span id="cb54-6"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html#cb54-6" tabindex="-1"></a>          <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="gwas_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
 <blockquote>
-<p>✅ <strong>Takeaway:</strong> Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the <code>data/</code> folder under the <code>sativa413_</code> prefix.</p>
+<p>✅ Takeaway: The qqman package offers a fast and simple way to create publication-ready Manhattan plots by plotting –log10(p-values) across the genome using SNP coordinates.</p>
 </blockquote>
 </div>
 </div>
@@ -291,8 +329,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

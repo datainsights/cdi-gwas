@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit</title>
+  <title>Q&A 19 How do you identify genome-wide significant SNP hits and save them for downstream analysis? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta property="og:title" content="Q&A 19 How do you identify genome-wide significant SNP hits and save them for downstream analysis? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 19 How do you identify genome-wide significant SNP hits and save them for downstream analysis? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="prev" href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html"/>
-<link rel="next" href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html"/>
+<link rel="prev" href="how-do-you-create-a-volcano-plot-from-gwas-results-using-ggplot2.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -268,22 +268,66 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Q&A 2</span> How do you prepare a public GWAS dataset for R-based analysis?<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="explanation-1" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Explanation<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#explanation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To support reproducible and cross-platform workflows, it’s helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from <a href="http://ricediversity.org/data/sets/44kgwas/">Zhao et al., 2011</a>.</p>
-<p>The script performs the following steps:</p>
+<div id="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis" class="section level1 hasAnchor" number="19">
+<h1><span class="header-section-number">Q&A 19</span> How do you identify genome-wide significant SNP hits and save them for downstream analysis?<a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-18" class="section level2 hasAnchor" number="19.1">
+<h2><span class="header-section-number">19.1</span> Explanation<a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#explanation-18" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Once GWAS results are generated and corrected for multiple testing, the next step is to identify statistically significant SNPs. A common threshold is the <strong>Bonferroni-adjusted p-value</strong>, which accounts for the number of tests.</p>
+<p>You can:</p>
 <ul>
-<li>📥 Downloads PLINK-formatted genotype files (<code>.ped</code>, <code>.map</code>, <code>.fam</code>)</li>
-<li>📦 Unzips and flattens the directory structure for easy access</li>
-<li>🏷️ Renames the phenotype file for clarity (<code>sativa413_phenotypes.txt</code>)</li>
-<li>📁 Moves all outputs into a consistent <code>data/</code> directory with a <code>sativa413_</code> prefix</li>
+<li>Filter SNPs below the Bonferroni threshold</li>
+<li>Annotate them with chromosome and base-pair position using the <code>.map</code> file</li>
+<li>Save the output for use in downstream steps like gene annotation or reporting</li>
 </ul>
-<p>This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.</p>
+</div>
+<div id="r-code-14" class="section level2 hasAnchor" number="19.2">
+<h2><span class="header-section-number">19.2</span> R Code<a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#r-code-14" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb65-2"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb65-3"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-3" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-4" tabindex="-1"></a><span class="co"># Step 1: Load GWAS results</span></span>
+<span id="cb65-5"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-5" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/gwas_results.csv&quot;</span>)</span>
+<span id="cb65-6"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-6" tabindex="-1"></a></span>
+<span id="cb65-7"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-7" tabindex="-1"></a><span class="co"># Step 2: Calculate Bonferroni threshold</span></span>
+<span id="cb65-8"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-8" tabindex="-1"></a>n_tests <span class="ot">&lt;-</span> <span class="fu">nrow</span>(gwas_df)</span>
+<span id="cb65-9"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-9" tabindex="-1"></a>bonf_threshold <span class="ot">&lt;-</span> <span class="fl">0.05</span> <span class="sc">/</span> n_tests  <span class="co"># ≈ 1.33e-05 for 3755 SNPs</span></span>
+<span id="cb65-10"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-10" tabindex="-1"></a></span>
+<span id="cb65-11"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-11" tabindex="-1"></a><span class="co"># Step 3: Filter significant hits</span></span>
+<span id="cb65-12"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-12" tabindex="-1"></a>significant_hits <span class="ot">&lt;-</span> gwas_df <span class="sc">%&gt;%</span></span>
+<span id="cb65-13"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-13" tabindex="-1"></a>  <span class="fu">filter</span>(P_value <span class="sc">&lt;</span> bonf_threshold) <span class="sc">%&gt;%</span></span>
+<span id="cb65-14"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-14" tabindex="-1"></a>  <span class="fu">arrange</span>(P_value)</span>
+<span id="cb65-15"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-15" tabindex="-1"></a></span>
+<span id="cb65-16"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-16" tabindex="-1"></a><span class="co"># Step 4: Load SNP position data</span></span>
+<span id="cb65-17"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-17" tabindex="-1"></a>map_df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/sativa413.map&quot;</span>,</span>
+<span id="cb65-18"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-18" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;CHR&quot;</span>, <span class="st">&quot;SNP&quot;</span>, <span class="st">&quot;GEN_DIST&quot;</span>, <span class="st">&quot;BP&quot;</span>),</span>
+<span id="cb65-19"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-19" tabindex="-1"></a>                   <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb65-20"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-20" tabindex="-1"></a></span>
+<span id="cb65-21"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-21" tabindex="-1"></a><span class="co"># Step 5: Annotate significant SNPs with position</span></span>
+<span id="cb65-22"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-22" tabindex="-1"></a>annotated_hits <span class="ot">&lt;-</span> <span class="fu">left_join</span>(significant_hits, map_df, <span class="at">by =</span> <span class="st">&quot;SNP&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb65-23"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-23" tabindex="-1"></a>  <span class="fu">select</span>(SNP, CHR, BP, Estimate, P_value)</span>
+<span id="cb65-24"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-24" tabindex="-1"></a></span>
+<span id="cb65-25"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-25" tabindex="-1"></a><span class="co"># Step 6: Save for downstream analysis</span></span>
+<span id="cb65-26"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-26" tabindex="-1"></a><span class="fu">write_csv</span>(annotated_hits, <span class="st">&quot;data/significant_snps_bonferroni.csv&quot;</span>)</span>
+<span id="cb65-27"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-27" tabindex="-1"></a></span>
+<span id="cb65-28"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-28" tabindex="-1"></a><span class="co"># Step 7: Preview top hits</span></span>
+<span id="cb65-29"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb65-29" tabindex="-1"></a><span class="fu">head</span>(annotated_hits, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code># A tibble: 10 × 5
+   SNP          CHR       BP Estimate  P_value
+   &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 id1024159      1 38111539    -16.6 7.55e-19
+ 2 ud10000717    10 11129237     19.6 2.02e-14
+ 3 id10003000    10 11508505     17.7 1.10e-13
+ 4 id6000791      6   905567     11.9 1.40e-12
+ 5 id3010870      3 24492231    -12.2 1.50e-12
+ 6 id2014431      2 32420895     19.3 3.05e-12
+ 7 id1024488      1 38618456     11.5 3.51e-12
+ 8 id11001027    11  3296722     14.5 3.53e-12
+ 9 id1020565      1 33058921    -14.8 5.70e-12
+10 id2001618      2  2873552     14.3 1.04e-11</code></pre>
 <blockquote>
-<p>✅ <strong>Takeaway:</strong> Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the <code>data/</code> folder under the <code>sativa413_</code> prefix.</p>
+<p>✅ Takeaway: Identifying and saving genome-wide significant SNPs ensures a clean input for downstream analysis such as gene annotation, pathway mapping, or publication reporting.</p>
 </blockquote>
+
 </div>
 </div>
             </section>
@@ -291,8 +335,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-create-a-volcano-plot-from-gwas-results-using-ggplot2.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

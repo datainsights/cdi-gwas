@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit</title>
+  <title>Q&A 14 How do you create a Manhattan plot from GWAS results using the ggplot2 package? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta property="og:title" content="Q&A 14 How do you create a Manhattan plot from GWAS results using the ggplot2 package? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 14 How do you create a Manhattan plot from GWAS results using the ggplot2 package? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="prev" href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html"/>
-<link rel="next" href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html"/>
+<link rel="prev" href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html"/>
+<link rel="next" href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -268,21 +268,59 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Q&A 2</span> How do you prepare a public GWAS dataset for R-based analysis?<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="explanation-1" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Explanation<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#explanation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To support reproducible and cross-platform workflows, it’s helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from <a href="http://ricediversity.org/data/sets/44kgwas/">Zhao et al., 2011</a>.</p>
-<p>The script performs the following steps:</p>
+<div id="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package" class="section level1 hasAnchor" number="14">
+<h1><span class="header-section-number">Q&A 14</span> How do you create a Manhattan plot from GWAS results using the <code>ggplot2</code> package?<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-13" class="section level2 hasAnchor" number="14.1">
+<h2><span class="header-section-number">14.1</span> Explanation<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#explanation-13" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A Manhattan plot visualizes the results of a genome-wide association study (GWAS) by plotting each SNP’s chromosomal position against the –log10(p-value) of its association with a trait. High peaks represent SNPs with strong associations.</p>
+<p>To create a Manhattan plot using the <code>ggplot2</code> package:</p>
 <ul>
-<li>📥 Downloads PLINK-formatted genotype files (<code>.ped</code>, <code>.map</code>, <code>.fam</code>)</li>
-<li>📦 Unzips and flattens the directory structure for easy access</li>
-<li>🏷️ Renames the phenotype file for clarity (<code>sativa413_phenotypes.txt</code>)</li>
-<li>📁 Moves all outputs into a consistent <code>data/</code> directory with a <code>sativa413_</code> prefix</li>
+<li>You must first merge the GWAS result table with SNP position data (e.g., from a <code>.map</code> file).</li>
+<li>The –log10(p-value) is computed to scale the plot.</li>
+<li>Cumulative genomic positions are calculated to plot SNPs across chromosomes on a continuous axis.</li>
+<li>Alternating colors help visually separate chromosomes.</li>
 </ul>
-<p>This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.</p>
+</div>
+<div id="r-code-10" class="section level2 hasAnchor" number="14.2">
+<h2><span class="header-section-number">14.2</span> R Code<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#r-code-10" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb52-2"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb52-3"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-3" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-4" tabindex="-1"></a><span class="co"># Step 1: Load GWAS results and SNP position data</span></span>
+<span id="cb52-5"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-5" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/gwas_results.csv&quot;</span>)</span>
+<span id="cb52-6"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-6" tabindex="-1"></a>map_df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/sativa413.map&quot;</span>, </span>
+<span id="cb52-7"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-7" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;CHR&quot;</span>, <span class="st">&quot;SNP&quot;</span>, <span class="st">&quot;GEN_DIST&quot;</span>, <span class="st">&quot;BP_POS&quot;</span>),</span>
+<span id="cb52-8"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-8" tabindex="-1"></a>                   <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb52-9"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-9" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-10" tabindex="-1"></a><span class="co"># Step 2: Merge GWAS results with chromosome position</span></span>
+<span id="cb52-11"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-11" tabindex="-1"></a>gwas_annotated <span class="ot">&lt;-</span> <span class="fu">left_join</span>(gwas_df, map_df, <span class="at">by =</span> <span class="st">&quot;SNP&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-12"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-12" tabindex="-1"></a>  <span class="fu">drop_na</span>()  <span class="co"># Remove SNPs with missing position</span></span>
+<span id="cb52-13"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-13" tabindex="-1"></a></span>
+<span id="cb52-14"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-14" tabindex="-1"></a><span class="co"># Step 3: Compute cumulative position for plotting across chromosomes</span></span>
+<span id="cb52-15"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-15" tabindex="-1"></a>gwas_annotated <span class="ot">&lt;-</span> gwas_annotated <span class="sc">%&gt;%</span></span>
+<span id="cb52-16"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-16" tabindex="-1"></a>  <span class="fu">arrange</span>(CHR, BP_POS) <span class="sc">%&gt;%</span></span>
+<span id="cb52-17"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-17" tabindex="-1"></a>  <span class="fu">group_by</span>(CHR) <span class="sc">%&gt;%</span></span>
+<span id="cb52-18"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">BP_CUM =</span> BP_POS <span class="sc">+</span> <span class="fu">ifelse</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">0</span>, <span class="fu">lag</span>(<span class="fu">cumsum</span>(BP_POS), <span class="at">default =</span> <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb52-19"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-19" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb52-20"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-20" tabindex="-1"></a></span>
+<span id="cb52-21"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-21" tabindex="-1"></a><span class="co"># Step 4: Compute –log10(p-value) and color group</span></span>
+<span id="cb52-22"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-22" tabindex="-1"></a>gwas_annotated <span class="ot">&lt;-</span> gwas_annotated <span class="sc">%&gt;%</span></span>
+<span id="cb52-23"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-23" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">logP =</span> <span class="sc">-</span><span class="fu">log10</span>(P_value),</span>
+<span id="cb52-24"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-24" tabindex="-1"></a>         <span class="at">CHR =</span> <span class="fu">as.factor</span>(CHR),</span>
+<span id="cb52-25"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-25" tabindex="-1"></a>         <span class="at">color_group =</span> <span class="fu">as.integer</span>(CHR) <span class="sc">%%</span> <span class="dv">2</span>)</span>
+<span id="cb52-26"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-26" tabindex="-1"></a></span>
+<span id="cb52-27"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-27" tabindex="-1"></a><span class="co"># Step 5: Plot Manhattan plot</span></span>
+<span id="cb52-28"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-28" tabindex="-1"></a><span class="fu">ggplot</span>(gwas_annotated, <span class="fu">aes</span>(<span class="at">x =</span> BP_CUM, <span class="at">y =</span> logP, <span class="at">color =</span> <span class="fu">as.factor</span>(color_group))) <span class="sc">+</span></span>
+<span id="cb52-29"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-29" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb52-30"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-30" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#003b4a&quot;</span>, <span class="st">&quot;dodgerblue&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb52-31"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-31" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Manhattan Plot of GWAS Results&quot;</span>,</span>
+<span id="cb52-32"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-32" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Genomic Position&quot;</span>, <span class="at">y =</span> <span class="fu">expression</span>(<span class="sc">-</span>log[<span class="dv">10</span>](p))) <span class="sc">+</span></span>
+<span id="cb52-33"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-33" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb52-34"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-34" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb52-35"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-35" tabindex="-1"></a>        <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb52-36"><a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html#cb52-36" tabindex="-1"></a>        <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
 <blockquote>
-<p>✅ <strong>Takeaway:</strong> Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the <code>data/</code> folder under the <code>sativa413_</code> prefix.</p>
+<p>✅ Takeaway: The ggplot2 package allows full control over layout, color, and formatting when visualizing SNP–trait associations across the genome in a Manhattan plot.</p>
 </blockquote>
 </div>
 </div>
@@ -291,8 +329,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

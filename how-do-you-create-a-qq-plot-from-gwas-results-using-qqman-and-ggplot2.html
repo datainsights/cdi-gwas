@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit</title>
+  <title>Q&A 16 How do you create a QQ plot from GWAS results using qqman and ggplot2? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta property="og:title" content="Q&A 16 How do you create a QQ plot from GWAS results using qqman and ggplot2? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 16 How do you create a QQ plot from GWAS results using qqman and ggplot2? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="prev" href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html"/>
-<link rel="next" href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html"/>
+<link rel="prev" href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html"/>
+<link rel="next" href="how-do-you-apply-multiple-testing-correction-to-gwas-results.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -268,21 +268,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Q&A 2</span> How do you prepare a public GWAS dataset for R-based analysis?<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="explanation-1" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Explanation<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#explanation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To support reproducible and cross-platform workflows, it’s helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from <a href="http://ricediversity.org/data/sets/44kgwas/">Zhao et al., 2011</a>.</p>
-<p>The script performs the following steps:</p>
+<div id="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2" class="section level1 hasAnchor" number="16">
+<h1><span class="header-section-number">Q&A 16</span> How do you create a QQ plot from GWAS results using <code>qqman</code> and <code>ggplot2</code>?<a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="explanation-15" class="section level2 hasAnchor" number="16.1">
+<h2><span class="header-section-number">16.1</span> Explanation<a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#explanation-15" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A QQ (quantile–quantile) plot compares the distribution of observed p-values from a GWAS with the expected distribution under the null hypothesis. It is a diagnostic tool to detect population structure, inflation, or true associations.</p>
+<p>You can use:</p>
 <ul>
-<li>📥 Downloads PLINK-formatted genotype files (<code>.ped</code>, <code>.map</code>, <code>.fam</code>)</li>
-<li>📦 Unzips and flattens the directory structure for easy access</li>
-<li>🏷️ Renames the phenotype file for clarity (<code>sativa413_phenotypes.txt</code>)</li>
-<li>📁 Moves all outputs into a consistent <code>data/</code> directory with a <code>sativa413_</code> prefix</li>
+<li>✅ <code>qqman::qq()</code> for a fast and simple plot<br />
+</li>
+<li>✅ <code>ggplot2</code> for customization and control over styling and annotations</li>
 </ul>
-<p>This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.</p>
+<p>Both approaches produce a similar result but are suited to different use cases.</p>
+<hr />
+</div>
+<div id="a.-using-the-qqman-package" class="section level2 hasAnchor" number="16.2">
+<h2><span class="header-section-number">16.2</span> A. Using the <code>qqman</code> package<a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#a.-using-the-qqman-package" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb55-2"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb55-3"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-3" tabindex="-1"></a><span class="fu">library</span>(qqman)</span>
+<span id="cb55-4"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-4" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-5" tabindex="-1"></a><span class="co"># Step 1: Load GWAS results</span></span>
+<span id="cb55-6"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-6" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/gwas_results.csv&quot;</span>)</span>
+<span id="cb55-7"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-7" tabindex="-1"></a></span>
+<span id="cb55-8"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-8" tabindex="-1"></a><span class="co"># Step 2: Create QQ plot using qqman</span></span>
+<span id="cb55-9"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-9" tabindex="-1"></a><span class="fu">qq</span>(gwas_df<span class="sc">$</span>P_value,</span>
+<span id="cb55-10"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb55-10" tabindex="-1"></a>   <span class="at">main =</span> <span class="st">&quot;QQ Plot of GWAS Results (qqman)&quot;</span>)</span></code></pre></div>
+<p><img src="gwas_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <blockquote>
-<p>✅ <strong>Takeaway:</strong> Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the <code>data/</code> folder under the <code>sativa413_</code> prefix.</p>
+<p>🟢 Simple and fast, but limited in customization (no legend or theming)</p>
+</blockquote>
+</div>
+<div id="b.-using-ggplot2-for-more-control" class="section level2 hasAnchor" number="16.3">
+<h2><span class="header-section-number">16.3</span> B. Using <code>ggplot2</code> for more control<a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#b.-using-ggplot2-for-more-control" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-1" tabindex="-1"></a><span class="co"># Load required library</span></span>
+<span id="cb56-2"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb56-3"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-3" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-4" tabindex="-1"></a><span class="co"># Step 1: Load GWAS results</span></span>
+<span id="cb56-5"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-5" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/gwas_results.csv&quot;</span>)</span>
+<span id="cb56-6"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-6" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-7" tabindex="-1"></a><span class="co"># Step 2: Calculate expected vs observed -log10(p)</span></span>
+<span id="cb56-8"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-8" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> gwas_df <span class="sc">%&gt;%</span></span>
+<span id="cb56-9"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-9" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(P_value)) <span class="sc">%&gt;%</span></span>
+<span id="cb56-10"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">observed =</span> <span class="sc">-</span><span class="fu">log10</span>(<span class="fu">sort</span>(P_value)),</span>
+<span id="cb56-11"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-11" tabindex="-1"></a>         <span class="at">expected =</span> <span class="sc">-</span><span class="fu">log10</span>(<span class="fu">ppoints</span>(<span class="fu">n</span>())))</span>
+<span id="cb56-12"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-12" tabindex="-1"></a></span>
+<span id="cb56-13"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-13" tabindex="-1"></a><span class="co"># Step 3: Create QQ plot with reference line using ggplot2</span></span>
+<span id="cb56-14"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-14" tabindex="-1"></a><span class="fu">ggplot</span>(gwas_df, <span class="fu">aes</span>(<span class="at">x =</span> expected, <span class="at">y =</span> observed)) <span class="sc">+</span></span>
+<span id="cb56-15"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-15" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span></span>
+<span id="cb56-16"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-16" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">1.2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">color =</span> <span class="st">&quot;steelblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb56-17"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;QQ Plot of GWAS Results (ggplot2)&quot;</span>,</span>
+<span id="cb56-18"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-18" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Expected -log10(p)&quot;</span>,</span>
+<span id="cb56-19"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-19" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Observed -log10(p)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb56-20"><a href="how-do-you-create-a-qq-plot-from-gwas-results-using-qqman-and-ggplot2.html#cb56-20" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code></pre></div>
+<p><img src="gwas_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<blockquote>
+<p>✅ Takeaway: The red dashed line represents the expected distribution of p-values under the null hypothesis. Deviations above the line suggest potential true associations or population structure. Use qqman for simplicity or ggplot2 for full customization.</p>
 </blockquote>
 </div>
 </div>
@@ -291,8 +332,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-qqman-package.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-apply-multiple-testing-correction-to-gwas-results.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
