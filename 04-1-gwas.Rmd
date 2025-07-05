@@ -206,17 +206,17 @@ All files are stored in the `data/` directory and prefixed with `sativa413_`.
 library(tidyverse)
 
 # Step 1: Load genotype data using readr
-ped_data <- read_table("data/sativas413.ped", col_names = FALSE, show_col_types = FALSE)
+ped_data <- read_table("data/sativa413.ped", col_names = FALSE, show_col_types = FALSE)
 
 # Step 2: Save as compressed RDS file
 write_rds(ped_data, file = "data/sativa413.rds")
 
 # Step 3: Load metadata files
-map_data <- read_table("data/sativas413.map", 
+map_data <- read_table("data/sativa413.map", 
                        col_names = c("chr", "snp_id", "gen_dist", "bp_pos"), 
                        show_col_types = FALSE)
 
-fam_data <- read_table("data/sativas413.fam", 
+fam_data <- read_table("data/sativa413.fam", 
                        col_names = c("FID", "IID", "PID", "MID", "sex", "phenotype"), 
                        show_col_types = FALSE)
 
@@ -278,7 +278,7 @@ library(tidyverse)
 
 # Step 1: Load genotype and SNP info (if not already in memory)
 ped_data <- read_rds("data/sativa413.rds")
-snp_info <- read_table("data/sativas413.map", 
+snp_info <- read_table("data/sativa413.map", 
                        col_names = c("chr", "snp_id", "gen_dist", "bp_pos"), 
                        show_col_types = FALSE)
 
@@ -377,7 +377,8 @@ glimpse(genotype_count[, 1:5])
 
 > ✅ **Takeaway:** Recoding genotype strings into numeric dosages (0, 1, 2) is essential for statistical GWAS models. It standardizes input and prepares your data for PCA, association testing, or genomic prediction.
 
-# How do you filter SNPs and samples based on missing data and minor allele frequency?# How do you filter genotype data for missingness and minor allele frequency?
+# How do you filter SNPs and samples based on missing data and minor allele frequency?
+<!-- # How do you filter genotype data for missingness and minor allele frequency? -->
 
 ## Explanation
 
@@ -506,7 +507,7 @@ This Q&A walks through the process of combining phenotype, PCA, and genotype dat
 library(tidyverse)
 
 # Step 1: Load and align phenotype data with sample metadata (by FID)
-fam_data <- read_table("data/sativas413.fam", 
+fam_data <- read_table("data/sativa413.fam", 
                        col_names = c("FID", "IID", "PID", "MID", "sex", "phenotype"), 
                        show_col_types = FALSE)
 
@@ -533,6 +534,9 @@ gwas_input <- left_join(sample_data, geno_data, by = "IID")
 # Step 6: Select trait and covariates
 trait <- "Plant height"  # Use the column name as a string
 covariates <- c("PC1", "PC2", "PC3")
+
+# Save the merged GWAS input to an RDS file for future use
+saveRDS(gwas_input, file = "data/gwas_input.rds")
 
 # Step 7: Construct the model formula
 snp_name <- names(geno_data)[2]  # Replace with desired SNP
@@ -561,7 +565,7 @@ This example tests the association between SNP `id1000007` and *Plant height*, a
 ## R Model Output Summary
 
 | Coefficient   | Estimate  | Std. Error | t value | Pr(>|t|)  | Significance |
-|---------------|-----------|------------|---------|-----------|--------------|
+|:---------------|:-----------|:------------|:---------|:-----------|:--------------|
 | (Intercept)   | 115.83448 | 1.04707    | 110.63  | < 2e-16   | ***          |
 | id1000007     | 2.17767   | 1.54100    | 1.413   | 0.158     |              |
 | PC1           | 0.20502   | 0.02761    | 7.426   | 7.49e-13  | ***          |
@@ -578,3 +582,427 @@ This example tests the association between SNP `id1000007` and *Plant height*, a
 - Overall p-value: **< 2.2e-16**
 
 > ✅ **Takeaway:** This SNP is not significant (`p = 0.158`), but PCs show strong association with plant height. Controlling for population structure is essential to avoid false signals in GWAS.
+
+# (PART) GWAS ANALYSIS & VIZ {-}
+
+# How do you perform a genome-wide SNP scan to generate GWAS results?
+
+## Explanation
+
+Once you’ve merged your phenotype, PCA covariates, and genotype matrix into a single data frame (`gwas_input`), you can perform a **genome-wide association scan**.
+
+This involves fitting a linear model for each SNP, adjusting for population structure (e.g., PCs), and extracting the **effect size** and **p-value** for each SNP. These results are saved in a table for downstream visualization using Manhattan or QQ plots.
+
+Each model looks like:
+
+*Plant height ~ PC1 + PC2 + PC3 + SNP_i*
+
+We loop over all SNP columns in the dataset that match known prefixes (`id`, `ud`, `wd`, `dd`, `fd`) and collect the outputs.
+
+## R Code
+
+```{r}
+# Load required package
+library(tidyverse)
+
+# Step 1: Identify SNP columns using prefix pattern
+snp_cols <- grep("^(id|ud|wd|dd|fd)[0-9]+$", names(gwas_input), value = TRUE)
+
+# Step 2: Check number of SNPs selected
+length(snp_cols)      # Should return 3755
+head(snp_cols, 5)     # Preview first 5 SNPs
+
+# Step 3: Initialize list to collect GWAS results
+gwas_results <- list()
+
+# Step 4: Loop over each SNP and fit linear model
+for (snp in snp_cols) {
+  # Construct formula dynamically
+  formula <- as.formula(paste("`Plant height` ~ PC1 + PC2 + PC3 +", snp))
+  
+  # Fit model safely
+  model <- tryCatch(
+    lm(formula, data = gwas_input),
+    error = function(e) NULL
+  )
+  
+  # Step 5: If successful, extract coefficient and p-value
+  if (!is.null(model)) {
+    coef_table <- summary(model)$coefficients
+    snp_row <- tail(rownames(coef_table), 1)
+    
+    gwas_results[[snp]] <- tibble(
+      SNP = snp,
+      Estimate = coef_table[snp_row, "Estimate"],
+      P_value = coef_table[snp_row, "Pr(>|t|)"]
+    )
+  }
+}
+
+# Step 6: Combine results and sort by p-value
+gwas_df <- bind_rows(gwas_results) %>%
+  arrange(P_value)
+
+# Step 7: Save the GWAS results for visualization
+write_csv(gwas_df, "data/gwas_results.csv")
+
+# Step 8: Preview top hits
+head(gwas_df, 10)
+```
+
+> ✅ Takeaway: This loop scans 3,755 SNPs genome-wide and outputs a clean summary table with effect sizes and p-values — ready for visualization using Manhattan and QQ plots.
+
+# How do you create a Manhattan plot from GWAS results using the `ggplot2` package?
+
+## Explanation
+
+A Manhattan plot visualizes the results of a genome-wide association study (GWAS) by plotting each SNP’s chromosomal position against the –log10(p-value) of its association with a trait. High peaks represent SNPs with strong associations.
+
+To create a Manhattan plot using the `ggplot2` package:
+
+- You must first merge the GWAS result table with SNP position data (e.g., from a `.map` file).
+- The –log10(p-value) is computed to scale the plot.
+- Cumulative genomic positions are calculated to plot SNPs across chromosomes on a continuous axis.
+- Alternating colors help visually separate chromosomes.
+
+## R Code
+
+```r
+# Load required libraries
+library(tidyverse)
+
+# Step 1: Load GWAS results and SNP position data
+gwas_df <- read_csv("data/gwas_results.csv")
+map_df <- read_tsv("data/sativa413.map", 
+                   col_names = c("CHR", "SNP", "GEN_DIST", "BP_POS"),
+                   show_col_types = FALSE)
+
+# Step 2: Merge GWAS results with chromosome position
+gwas_annotated <- left_join(gwas_df, map_df, by = "SNP") %>%
+  drop_na()  # Remove SNPs with missing position
+
+# Step 3: Compute cumulative position for plotting across chromosomes
+gwas_annotated <- gwas_annotated %>%
+  arrange(CHR, BP_POS) %>%
+  group_by(CHR) %>%
+  mutate(BP_CUM = BP_POS + ifelse(row_number() == 1, 0, lag(cumsum(BP_POS), default = 0))) %>%
+  ungroup()
+
+# Step 4: Compute –log10(p-value) and color group
+gwas_annotated <- gwas_annotated %>%
+  mutate(logP = -log10(P_value),
+         CHR = as.factor(CHR),
+         color_group = as.integer(CHR) %% 2)
+
+# Step 5: Plot Manhattan plot
+ggplot(gwas_annotated, aes(x = BP_CUM, y = logP, color = as.factor(color_group))) +
+  geom_point(alpha = 0.7, size = 1.2) +
+  scale_color_manual(values = c("#003b4a", "dodgerblue")) +
+  labs(title = "Manhattan Plot of GWAS Results",
+       x = "Genomic Position", y = expression(-log[10](p))) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
+```
+
+
+
+> ✅ Takeaway: The ggplot2 package allows full control over layout, color, and formatting when visualizing SNP–trait associations across the genome in a Manhattan plot.
+
+# How do you create a Manhattan plot from GWAS results using the `qqman` package?
+
+## Explanation
+
+The `qqman` package provides a convenient way to create Manhattan plots directly from GWAS result tables. A Manhattan plot displays each SNP's –log10(p-value) along its genomic position, helping identify regions with strong associations.
+
+The function `manhattan()` expects a data frame with these key columns:
+
+- `CHR`: Chromosome number  
+- `BP`: Base-pair position  
+- `SNP`: SNP identifier  
+- `P`: P-value from the association test
+
+You can prepare this by merging your GWAS result table with a `.map` file containing SNP positions.
+
+
+
+## R Code
+
+```{r}
+# Load required libraries
+library(tidyverse)
+library(qqman)
+
+# Step 1: Load GWAS results
+gwas_df <- read_csv("data/gwas_results.csv")
+
+# Step 2: Load SNP position data (.map file)
+map_df <- read_tsv("data/sativa413.map", 
+                   col_names = c("CHR", "SNP", "GEN_DIST", "BP"),
+                   show_col_types = FALSE)
+
+# Step 3: Merge results with map data
+gwas_annotated <- left_join(gwas_df, map_df, by = "SNP") %>%
+  select(SNP, CHR, BP, P = P_value) %>%
+  drop_na()
+
+# Step 4: Create Manhattan plot using qqman
+manhattan(gwas_annotated,
+          main = "Manhattan Plot of GWAS Results",
+          col = c("grey30", "dodgerblue"),
+          cex = 0.6,
+          cex.axis = 0.9,
+          las = 1)
+manhattan(gwas_annotated,
+          main = "Manhattan Plot of GWAS Results",
+          col = c("#003b4a", "dodgerblue"),
+          cex = 0.6,
+          cex.axis = 0.9,
+          las = 1)
+```
+
+> ✅ Takeaway: The qqman package offers a fast and simple way to create publication-ready Manhattan plots by plotting –log10(p-values) across the genome using SNP coordinates.
+
+# How do you create a QQ plot from GWAS results using `qqman` and `ggplot2`?
+
+## Explanation
+
+A QQ (quantile–quantile) plot compares the distribution of observed p-values from a GWAS with the expected distribution under the null hypothesis. It is a diagnostic tool to detect population structure, inflation, or true associations.
+
+You can use:
+
+- ✅ `qqman::qq()` for a fast and simple plot  
+- ✅ `ggplot2` for customization and control over styling and annotations
+
+Both approaches produce a similar result but are suited to different use cases.
+
+---
+
+
+
+## A. Using the `qqman` package
+
+```{r}
+# Load required libraries
+library(tidyverse)
+library(qqman)
+
+# Step 1: Load GWAS results
+gwas_df <- read_csv("data/gwas_results.csv")
+
+# Step 2: Create QQ plot using qqman
+qq(gwas_df$P_value,
+   main = "QQ Plot of GWAS Results (qqman)")
+```
+
+> 🟢 Simple and fast, but limited in customization (no legend or theming)
+
+
+
+
+## B. Using `ggplot2` for more control
+
+```{r}
+# Load required library
+library(tidyverse)
+
+# Step 1: Load GWAS results
+gwas_df <- read_csv("data/gwas_results.csv")
+
+# Step 2: Calculate expected vs observed -log10(p)
+gwas_df <- gwas_df %>%
+  filter(!is.na(P_value)) %>%
+  mutate(observed = -log10(sort(P_value)),
+         expected = -log10(ppoints(n())))
+
+# Step 3: Create QQ plot with reference line using ggplot2
+ggplot(gwas_df, aes(x = expected, y = observed)) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+  geom_point(size = 1.2, alpha = 0.6, color = "steelblue") +
+  labs(title = "QQ Plot of GWAS Results (ggplot2)",
+       x = "Expected -log10(p)",
+       y = "Observed -log10(p)") +
+  theme_minimal(base_size = 14)
+```
+
+> ✅ Takeaway: The red dashed line represents the expected distribution of p-values under the null hypothesis. Deviations above the line suggest potential true associations or population structure. Use qqman for simplicity or ggplot2 for full customization.
+
+# How do you apply multiple testing correction to GWAS results?
+
+## Explanation
+
+In GWAS, thousands of SNPs are tested for association with a trait. This increases the chance of false positives. To control this, we apply **multiple testing correction** methods such as:
+
+- **Bonferroni correction**: Very strict; divides the alpha level (e.g., 0.05) by the number of tests
+- **False Discovery Rate (FDR)**: A more flexible method that controls the proportion of false positives among significant results (e.g., Benjamini-Hochberg)
+
+This helps identify **statistically significant SNPs** while accounting for the large number of tests.
+
+## R Code
+
+```{r}
+# Load required packages
+library(tidyverse)
+
+# Step 1: Load GWAS results
+gwas_df <- read_csv("data/gwas_results.csv")
+
+# Step 2: Add Bonferroni-corrected threshold
+n_tests <- nrow(gwas_df)
+bonf_threshold <- 0.05 / n_tests
+
+# Step 3: Apply FDR correction using p.adjust
+gwas_df <- gwas_df %>%
+  mutate(FDR = p.adjust(P_value, method = "BH"))
+
+# Step 4: Extract significant SNPs
+significant_bonf <- gwas_df %>%
+  filter(P_value < bonf_threshold)
+
+significant_fdr <- gwas_df %>%
+  filter(FDR < 0.05)
+
+# Step 5: Output summary
+cat("Bonferroni threshold:", bonf_threshold, "\n")
+cat("Number of SNPs passing Bonferroni:", nrow(significant_bonf), "\n")
+cat("Number of SNPs passing FDR < 0.05:", nrow(significant_fdr), "\n")
+```
+
+> ✅ Takeaway: Multiple testing correction is essential in GWAS. Bonferroni is strict but conservative, while FDR balances sensitivity and specificity. Always report how significance was determined.
+
+
+## Interpretation
+
+After applying multiple testing correction to the GWAS results:
+
+- **Bonferroni threshold**: `1.331558e-05`  
+  This is the genome-wide significance level calculated by:
+
+*alpha_bonf = 0.05 / 3755 ≈ 1.33 × 10⁻⁵*
+
+
+Any SNP with a raw p-value below this threshold is considered **highly significant**, even under the strictest correction method (controlling the family-wise error rate).
+
+- **Number of SNPs passing Bonferroni**: `250`  
+These are the **strongest associations**, with extremely low p-values. They're unlikely to be false positives and are good candidates for follow-up analysis or functional validation.
+
+- **Number of SNPs passing FDR < 0.05**: `1265`  
+These SNPs are considered statistically significant under a **False Discovery Rate (FDR) of 5%**. This means that, on average, only 5% of these hits are expected to be false positives. It’s a more permissive method that helps capture broader signals.
+
+### Summary Table
+
+| Correction Method | Threshold           | Significant SNPs | Interpretation                             |
+|:-------------------|:---------------------|:------------------|:---------------------------------------------|
+| Bonferroni        | `1.33e-05`          | 250              | Very strict; strong confidence              |
+| FDR (BH)          | `adjusted < 0.05`   | 1265             | Balanced; allows more discovery, some risk  |
+
+> ✅ **Takeaway:** Use Bonferroni to identify high-confidence SNPs and FDR to explore additional signals while controlling the expected proportion of false positives.
+
+# How do you create a volcano plot from GWAS results using `ggplot2`?
+
+## Explanation
+
+A volcano plot is a powerful way to visualize both the **effect size** and **statistical significance** of SNPs in GWAS results. Each point represents a SNP, plotted by:
+
+- **X-axis**: Effect size (regression coefficient)
+- **Y-axis**: –log10(p-value), indicating significance
+
+This plot highlights SNPs with:
+- Large effect sizes
+- Low p-values (high significance)
+- Or both
+
+You can also add horizontal and vertical reference lines to help interpret thresholds.
+
+## R Code
+
+```{r}
+# Load required libraries
+library(tidyverse)
+
+# Step 1: Load GWAS results
+gwas_df <- read_csv("data/gwas_results.csv")
+
+# Step 2: Compute –log10(p-value)
+gwas_df <- gwas_df %>%
+  mutate(logP = -log10(P_value))
+
+# Step 3: Create volcano plot
+ggplot(gwas_df, aes(x = Estimate, y = logP)) +
+  geom_point(alpha = 0.6, color = "grey40") +
+  geom_hline(yintercept = -log10(0.05 / nrow(gwas_df)), linetype = "dashed", color = "red") +  # Bonferroni line
+  geom_vline(xintercept = 0, linetype = "dotted", color = "black") +  # Null effect line
+  labs(title = "Volcano Plot of GWAS Results",
+       x = "Effect Size (Estimate)",
+       y = expression(-log[10](p))) +
+  theme_minimal(base_size = 14)
+
+
+# Add significance status
+gwas_df <- gwas_df %>%
+  mutate(significant = P_value < 0.05 / nrow(gwas_df))
+
+# Re-plot with color by significance
+ggplot(gwas_df, aes(x = Estimate, y = logP, color = significant)) +
+  geom_point(alpha = 0.7) +
+  scale_color_manual(values = c("grey70", "red")) +
+  geom_hline(yintercept = -log10(0.05 / nrow(gwas_df)), linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 0, linetype = "dotted", color = "black") +
+  labs(title = "Volcano Plot with Bonferroni Threshold",
+       x = "Effect Size (Estimate)",
+       y = expression(-log[10](p))) +
+  theme_minimal(base_size = 14) +
+  theme(legend.title = element_blank())
+```
+
+> ✅ Takeaway: A volcano plot shows the balance between effect size and significance. SNPs with both large effects and low p-values appear as extreme points in the top left or right quadrants.
+
+# How do you identify genome-wide significant SNP hits and save them for downstream analysis?
+
+## Explanation
+
+Once GWAS results are generated and corrected for multiple testing, the next step is to identify statistically significant SNPs. A common threshold is the **Bonferroni-adjusted p-value**, which accounts for the number of tests.
+
+You can:
+
+- Filter SNPs below the Bonferroni threshold
+- Annotate them with chromosome and base-pair position using the `.map` file
+- Save the output for use in downstream steps like gene annotation or reporting
+
+## R Code
+
+```{r}
+# Load required libraries
+library(tidyverse)
+
+# Step 1: Load GWAS results
+gwas_df <- read_csv("data/gwas_results.csv")
+
+# Step 2: Calculate Bonferroni threshold
+n_tests <- nrow(gwas_df)
+bonf_threshold <- 0.05 / n_tests  # ≈ 1.33e-05 for 3755 SNPs
+
+# Step 3: Filter significant hits
+significant_hits <- gwas_df %>%
+  filter(P_value < bonf_threshold) %>%
+  arrange(P_value)
+
+# Step 4: Load SNP position data
+map_df <- read_tsv("data/sativa413.map",
+                   col_names = c("CHR", "SNP", "GEN_DIST", "BP"),
+                   show_col_types = FALSE)
+
+# Step 5: Annotate significant SNPs with position
+annotated_hits <- left_join(significant_hits, map_df, by = "SNP") %>%
+  select(SNP, CHR, BP, Estimate, P_value)
+
+# Step 6: Save for downstream analysis
+write_csv(annotated_hits, "data/significant_snps_bonferroni.csv")
+
+# Step 7: Preview top hits
+head(annotated_hits, 10)
+```
+
+> ✅ Takeaway: Identifying and saving genome-wide significant SNPs ensures a clean input for downstream analysis such as gene annotation, pathway mapping, or publication reporting.
+

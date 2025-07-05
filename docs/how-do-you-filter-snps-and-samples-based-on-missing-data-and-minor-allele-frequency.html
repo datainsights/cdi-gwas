@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit</title>
+  <title>Q&A 8 How do you filter SNPs and samples based on missing data and minor allele frequency? | gwas.knit</title>
   <meta name="description" content="Genomics for Population Health" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta property="og:title" content="Q&A 8 How do you filter SNPs and samples based on missing data and minor allele frequency? | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Q&A 2 How do you prepare a public GWAS dataset for R-based analysis? | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 8 How do you filter SNPs and samples based on missing data and minor allele frequency? | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="prev" href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html"/>
-<link rel="next" href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html"/>
+<link rel="prev" href="how-do-you-recode-allele-strings-into-numeric-count-format-for-gwas.html"/>
+<link rel="next" href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -268,21 +268,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Q&A 2</span> How do you prepare a public GWAS dataset for R-based analysis?<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="explanation-1" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Explanation<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis.html#explanation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To support reproducible and cross-platform workflows, it’s helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from <a href="http://ricediversity.org/data/sets/44kgwas/">Zhao et al., 2011</a>.</p>
-<p>The script performs the following steps:</p>
+<div id="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Q&A 8</span> How do you filter SNPs and samples based on missing data and minor allele frequency?<a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<!-- # How do you filter genotype data for missingness and minor allele frequency? -->
+<div id="explanation-7" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Explanation<a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#explanation-7" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Before running GWAS, it’s important to apply basic quality control (QC) to the genotype matrix. This ensures that:</p>
 <ul>
-<li>📥 Downloads PLINK-formatted genotype files (<code>.ped</code>, <code>.map</code>, <code>.fam</code>)</li>
-<li>📦 Unzips and flattens the directory structure for easy access</li>
-<li>🏷️ Renames the phenotype file for clarity (<code>sativa413_phenotypes.txt</code>)</li>
-<li>📁 Moves all outputs into a consistent <code>data/</code> directory with a <code>sativa413_</code> prefix</li>
+<li>SNPs with too many missing genotypes are excluded<br />
+</li>
+<li>SNPs with very low variability (low minor allele frequency) are removed<br />
+</li>
+<li>Samples with excessive missing data (optional) are filtered out</li>
 </ul>
-<p>This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.</p>
+<p>These steps improve statistical power and reduce false associations.</p>
+</div>
+<div id="r-code-5" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> R Code<a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#r-code-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb33-2"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb33-3"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-3" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-4" tabindex="-1"></a><span class="co"># Step 1: Remove sample columns (FID, IID)</span></span>
+<span id="cb33-5"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-5" tabindex="-1"></a>count_only <span class="ot">&lt;-</span> genotype_count[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)]</span>
+<span id="cb33-6"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-6" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-7" tabindex="-1"></a><span class="co"># Step 2: Filter SNPs by missingness (e.g., keep SNPs with &lt;10% missing values)</span></span>
+<span id="cb33-8"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-8" tabindex="-1"></a>snp_missing <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(<span class="fu">is.na</span>(count_only))</span>
+<span id="cb33-9"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-9" tabindex="-1"></a>snp_keep <span class="ot">&lt;-</span> <span class="fu">names</span>(snp_missing[snp_missing <span class="sc">&lt;</span> <span class="fl">0.1</span>])</span>
+<span id="cb33-10"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-10" tabindex="-1"></a>filtered_count <span class="ot">&lt;-</span> count_only[, snp_keep]</span>
+<span id="cb33-11"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-11" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-12" tabindex="-1"></a><span class="co"># Step 3: Filter SNPs by minor allele frequency (MAF &gt;= 0.05)</span></span>
+<span id="cb33-13"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-13" tabindex="-1"></a>calc_maf <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb33-14"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-14" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb33-15"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-15" tabindex="-1"></a>  <span class="fu">min</span>(p, <span class="dv">1</span> <span class="sc">-</span> p)</span>
+<span id="cb33-16"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-16" tabindex="-1"></a>}</span>
+<span id="cb33-17"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-17" tabindex="-1"></a>snp_maf <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(filtered_count, calc_maf)</span>
+<span id="cb33-18"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-18" tabindex="-1"></a>maf_keep <span class="ot">&lt;-</span> <span class="fu">names</span>(snp_maf[snp_maf <span class="sc">&gt;=</span> <span class="fl">0.05</span>])</span>
+<span id="cb33-19"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-19" tabindex="-1"></a>final_count <span class="ot">&lt;-</span> filtered_count[, maf_keep]</span>
+<span id="cb33-20"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-20" tabindex="-1"></a></span>
+<span id="cb33-21"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-21" tabindex="-1"></a><span class="co"># Step 4: Reattach FID and IID</span></span>
+<span id="cb33-22"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-22" tabindex="-1"></a>filtered_geno <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(genotype_count[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], final_count)</span>
+<span id="cb33-23"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-23" tabindex="-1"></a></span>
+<span id="cb33-24"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-24" tabindex="-1"></a><span class="co"># Step 5: Summary of filtering</span></span>
+<span id="cb33-25"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb33-25" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Original SNPs:&quot;</span>, <span class="fu">ncol</span>(count_only), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>Original SNPs: 36901 </code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb35-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;After missing filter:&quot;</span>, <span class="fu">length</span>(snp_keep), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>After missing filter: 31443 </code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="how-do-you-filter-snps-and-samples-based-on-missing-data-and-minor-allele-frequency.html#cb37-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;After MAF filter:&quot;</span>, <span class="fu">length</span>(maf_keep), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>After MAF filter: 3755 </code></pre>
 <blockquote>
-<p>✅ <strong>Takeaway:</strong> Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the <code>data/</code> folder under the <code>sativa413_</code> prefix.</p>
+<p>✅ <strong>Takeaway:</strong> Apply SNP-level filters for missing data and low MAF to improve data quality. This ensures that only informative and reliable markers are used in your GWAS analysis.</p>
 </blockquote>
 </div>
 </div>
@@ -291,8 +325,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="how-do-you-create-a-gwas-project-directory-ready-for-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="how-do-you-prepare-a-public-gwas-dataset-for-r-based-analysis-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-recode-allele-strings-into-numeric-count-format-for-gwas.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-do-you-impute-missing-genotype-values-before-gwas-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
