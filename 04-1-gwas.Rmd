@@ -93,23 +93,6 @@ To support reproducible and cross-platform workflows, it's helpful to separate r
 
 The script performs the following steps:
 
-- 📥 Downloads PLINK-formatted genotype files (`.ped`, `.map`, `.fam`)
-- 📦 Unzips and flattens the directory structure for easy access
-- 🏷️ Renames the phenotype file for clarity (`sativa413_phenotypes.txt`)
-- 📁 Moves all outputs into a consistent `data/` directory with a `sativa413_` prefix
-
-This setup creates a clean and well-organized foundation for downstream R-based GWAS analysis.
-
-> ✅ **Takeaway:** Using a Bash script to automate dataset download and organization keeps your R analysis environment clean, standardized, and fully reproducible. All required files are now available in the `data/` folder under the `sativa413_` prefix.
-
-# How do you prepare a public GWAS dataset for R-based analysis?
-
-## Explanation
-
-To support reproducible and cross-platform workflows, it's helpful to separate raw data preparation from your analysis code. In this example, we use a Bash script to download and organize a publicly available rice diversity panel dataset from [Zhao et al., 2011](http://ricediversity.org/data/sets/44kgwas/).
-
-The script performs the following steps:
-
 - 📥 Downloads PLINK-formatted genotype files (`.ped`, `.map`, `.fam`)  
 - 📦 Unzips and flattens the directory structure for easy access  
 - 🏷️ Renames the phenotype file for clarity (`sativa413_phenotypes.txt`)  
@@ -163,11 +146,13 @@ echo "✅ GWAS data successfully prepared in the data/ folder."
 ```
 
 The Bash script is saved as:  
+
 ```bash
 script/gwas_data.sh
 ```
 
 To run it:
+
 ```bash
 bash script/gwas_data.sh
 ```
@@ -667,7 +652,7 @@ To create a Manhattan plot using the `ggplot2` package:
 
 ## R Code
 
-```r
+```{r}
 # Load required libraries
 library(tidyverse)
 

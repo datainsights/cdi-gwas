@@ -139,19 +139,3 @@ else
   echo "Usage: $0 {eda-gitbook|viz-gitbook|viz-pdf|stats-gitbook|stats-pdf|ml-gitbook|ml-pdf}"
   exit 1
 fi
-
-echo "🧹 Cleaning up Visualization build files..."
-rm -f viz-pdf/*.md viz-pdf/*.tex
-rm -f stats-pdf/*.md stats-pdf/*.tex
-rm -f ml-pdf/*.md ml-pdf/*.tex
-rm -f gwas-pdf/*.md gwas-pdf/*.tex
-rm -rf viz-pdf/_bookdown_files/
-rm -rf stats-pdf/_bookdown_files/
-rm -rf ml-pdf/_bookdown_files/
-rm -rf gwas-pdf/_bookdown_files/
-rm -f ./*.rds
-echo "✅ Cleanup complete."
-
-# Remove symlink to avoid accidental reuse
-rm -f index.Rmd
-rm -f _bookdown.yml

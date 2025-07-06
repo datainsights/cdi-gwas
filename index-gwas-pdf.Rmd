@@ -1,6 +1,6 @@
 ---
 title: |
-  | Genomics for Population Health
+  | GWAS Step-by-Step Analysis with R
 subtitle: |
   ![](images/cdi-gwas-cover.png){width=75%}  
   | Last updated: `r format(Sys.Date(), "%B %d, %Y")` 
