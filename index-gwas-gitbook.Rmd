@@ -1,9 +1,9 @@
 ---
-title: |
-  | GWAS Step-by-Step Analysis with R
+title:
+  - Learning GWAS One Step at a Time with R
 subtitle: |
-  ![](images/cdi-gwas-cover.png){width=75%}  
-  | Last updated: `r format(Sys.Date(), "%B %d, %Y")` 
+  | ![](images/cdi-gwas-cover.png){width=75%}
+  | Last updated: `r format(Sys.Date(), "%B %d, %Y")`
 knit: bookdown::render_book
 site: bookdown::bookdown_site
 documentclass: book
