@@ -53,7 +53,12 @@ Whether you're preparing datasets, interpreting results, or exploring research a
 
 ### 🌐 The CDI Learning Path {-}
 
-This guide is part of the **Complex Data Insights (CDI)** learning system — a fully free and open-source project licensed under the MIT License.
+This guide is part of the **Complex Data Insights (CDI)** learning system — an open educational project that combines:
+
+- 📘 **Free learning content**, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (Creative Commons Attribution)  
+- 💻 **Code and scripts**, licensed under the [MIT License](https://opensource.org/license/mit/)
+
+You're free to use, adapt, and redistribute this material for personal, academic, or non-commercial purposes — with proper attribution to **Complex Data Insights (CDI)**.
 
 CDI breaks down complex topics into four progressive layers, designed to be explored individually or as an integrated journey:
 
