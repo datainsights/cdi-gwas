@@ -683,7 +683,7 @@ gwas_annotated <- gwas_annotated %>%
 ggplot(gwas_annotated, aes(x = BP_CUM, y = logP, color = as.factor(color_group))) +
   geom_point(alpha = 0.7, size = 1.2) +
   scale_color_manual(values = c("#003b4a", "dodgerblue")) +
-  labs(title = "Manhattan Plot of GWAS Results",
+  labs(title = "Manhattan Plot Using ggplot2",
        x = "Genomic Position", y = expression(-log[10](p))) +
   theme_minimal(base_size = 14) +
   theme(legend.position = "none",
@@ -736,12 +736,6 @@ gwas_annotated <- left_join(gwas_df, map_df, by = "SNP") %>%
 manhattan(gwas_annotated,
           main = "Manhattan Plot of GWAS Results",
           col = c("grey30", "dodgerblue"),
-          cex = 0.6,
-          cex.axis = 0.9,
-          las = 1)
-manhattan(gwas_annotated,
-          main = "Manhattan Plot of GWAS Results",
-          col = c("#003b4a", "dodgerblue"),
           cex = 0.6,
           cex.axis = 0.9,
           las = 1)
