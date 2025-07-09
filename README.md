@@ -79,5 +79,7 @@ We welcome improvements, feedback, and collaboration!
 
 ## 📄 License
 
-This project is released under the [MIT License](LICENSE).  
-Attribution is appreciated in derivative works or training use.
+This project is released under the [MIT License](LICENSE) for all code and scripts.
+
+✍️ Educational content (e.g., Q&A guides, explanations, Markdown tutorials) is openly shareable under a permissive model.  
+Attribution is appreciated for derivative works, training use, or redistribution — aligned with the principles of [Creative Commons Attribution (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
