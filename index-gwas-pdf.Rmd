@@ -1,6 +1,6 @@
 ---
 title:
-  - Learning GWAS One Step at a Time with R
+  - Genome Wide Association Studies <br> One Step at a Time with R
 subtitle: |
   | ![](images/cdi-gwas-cover.png){width=75%}
   | Last updated: `r format(Sys.Date(), "%B %d, %Y")`

@@ -9,10 +9,20 @@ if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
 library(renv)
 
 # --- Bioconductor packages for GWAS ---
-bioc_pkgs <- c("SNPRelate", "gdsfmt")
+bioc_pkgs <- c(
+  "SNPRelate", 
+  "gdsfmt"
+  )
 
 # --- CRAN packages for GWAS ---
-cran_pkgs <- c("rrBLUP", "BGLR", "DT", "dplyr", "qqman", "poolr", "glue")
+cran_pkgs <- c(
+  "rrBLUP", 
+  "BGLR", "DT", 
+  "dplyr", 
+  "qqman", 
+  "poolr", 
+  "glue"
+  )
 
 # Install Bioconductor packages
 for (pkg in bioc_pkgs) {
@@ -35,9 +45,9 @@ for (pkg in cran_pkgs) {
 }
 
 # --- Optional GitHub packages ---
-# if (!requireNamespace("someGWASpkg", quietly = TRUE)) {
-#   message("Installing GitHub package: username/someGWASpkg")
-#   renv::install("username/someGWASpkg")
+# if (!requireNamespace("pkgname", quietly = TRUE)) {
+#   message("Installing GitHub package: username/pkgname")
+#   renv::install("username/pkgname")
 # }
 
 message("✅ GWAS domain package setup complete.")
