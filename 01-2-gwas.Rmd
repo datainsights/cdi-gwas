@@ -1,0 +1,3 @@
+# (PART) GWA PIPILINE {-}
+
+# GWAS Pipeline Stitched From Q&A

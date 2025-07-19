@@ -31,17 +31,17 @@ if [[ "$1" == "gwas-gitbook" ]]; then
   echo "✅ GWAS GitBook complete → /docs"
 
 
-# -------------------------------
-# GWAS PDF
-# -------------------------------
-elif [[ "$1" == "gwas-pdf" ]]; then
-  echo "📘 Building GWAS PDF..."
-  cp -f index-gwas-pdf.Rmd index.Rmd
-  link_bookdown_config _bookdown-gwas.yml
-  mkdir -p gwas-pdf
-  Rscript -e 'bookdown::render_book("index.Rmd", "bookdown::pdf_book", output_dir = "gwas-pdf")'
-  rm index.Rmd
-  echo "✅ GWAS PDF complete → /gwas-pdf"
+# # -------------------------------
+# # GWAS PDF
+# # -------------------------------
+# elif [[ "$1" == "gwas-pdf" ]]; then
+#   echo "📘 Building GWAS PDF..."
+#   cp -f index-gwas-pdf.Rmd index.Rmd
+#   link_bookdown_config _bookdown-gwas.yml
+#   mkdir -p gwas-pdf
+#   Rscript -e 'bookdown::render_book("index.Rmd", "bookdown::pdf_book", output_dir = "gwas-pdf")'
+#   rm index.Rmd
+#   echo "✅ GWAS PDF complete → /gwas-pdf"
 
 
 

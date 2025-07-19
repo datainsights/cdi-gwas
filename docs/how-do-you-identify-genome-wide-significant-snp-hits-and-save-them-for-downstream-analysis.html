@@ -29,7 +29,7 @@
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel="prev" href="how-do-you-create-a-volcano-plot-from-gwas-results-using-ggplot2.html"/>
-
+<link rel="next" href="gwas-pipeline-stitched-from-qa.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -244,6 +244,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="18.1" data-path="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#explanation-17"><i class="fa fa-check"></i><b>18.1</b> Explanation</a></li>
 <li class="chapter" data-level="18.2" data-path="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#r-code-14"><i class="fa fa-check"></i><b>18.2</b> R Code</a></li>
 </ul></li>
+<li class="part"><span><b>III GWA PIPILINE</b></span></li>
+<li class="chapter" data-level="19" data-path="gwas-pipeline-stitched-from-qa.html"><a href="gwas-pipeline-stitched-from-qa.html"><i class="fa fa-check"></i><b>19</b> GWAS Pipeline Stitched From Q&amp;A</a></li>
 <li class="divider"></li>
 <li><a href="https://complexdatainsights.com/product">Explore More Guides</a></li>
 
@@ -294,7 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb64-14"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-14" tabindex="-1"></a>  <span class="fu">arrange</span>(P_value)</span>
 <span id="cb64-15"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-15" tabindex="-1"></a></span>
 <span id="cb64-16"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-16" tabindex="-1"></a><span class="co"># Step 4: Load SNP position data</span></span>
-<span id="cb64-17"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-17" tabindex="-1"></a>map_df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/sativa413.map&quot;</span>,</span>
+<span id="cb64-17"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-17" tabindex="-1"></a>map_df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/sativas413.map&quot;</span>,</span>
 <span id="cb64-18"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-18" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;CHR&quot;</span>, <span class="st">&quot;SNP&quot;</span>, <span class="st">&quot;GEN_DIST&quot;</span>, <span class="st">&quot;BP&quot;</span>),</span>
 <span id="cb64-19"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-19" tabindex="-1"></a>                   <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb64-20"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#cb64-20" tabindex="-1"></a></span>
@@ -326,13 +328,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </div>
 </div>
+
+
+
             </section>
 
           </div>
         </div>
       </div>
-<a href="how-do-you-create-a-volcano-plot-from-gwas-results-using-ggplot2.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="how-do-you-create-a-volcano-plot-from-gwas-results-using-ggplot2.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="gwas-pipeline-stitched-from-qa.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -363,7 +368,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/04-1-gwas.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/01-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

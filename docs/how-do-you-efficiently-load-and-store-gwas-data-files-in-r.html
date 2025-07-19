@@ -244,6 +244,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="18.1" data-path="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#explanation-17"><i class="fa fa-check"></i><b>18.1</b> Explanation</a></li>
 <li class="chapter" data-level="18.2" data-path="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html"><a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html#r-code-14"><i class="fa fa-check"></i><b>18.2</b> R Code</a></li>
 </ul></li>
+<li class="part"><span><b>III GWA PIPILINE</b></span></li>
+<li class="chapter" data-level="19" data-path="gwas-pipeline-stitched-from-qa.html"><a href="gwas-pipeline-stitched-from-qa.html"><i class="fa fa-check"></i><b>19</b> GWAS Pipeline Stitched From Q&amp;A</a></li>
 <li class="divider"></li>
 <li><a href="https://complexdatainsights.com/product">Explore More Guides</a></li>
 
@@ -281,17 +283,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb10-2"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-2" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-3" tabindex="-1"></a><span class="co"># Step 1: Load genotype data using readr</span></span>
-<span id="cb10-4"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-4" tabindex="-1"></a>ped_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativa413.ped&quot;</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb10-4"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-4" tabindex="-1"></a>ped_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativas413.ped&quot;</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-5"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-5" tabindex="-1"></a></span>
 <span id="cb10-6"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-6" tabindex="-1"></a><span class="co"># Step 2: Save as compressed RDS file</span></span>
-<span id="cb10-7"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-7" tabindex="-1"></a><span class="fu">write_rds</span>(ped_data, <span class="at">file =</span> <span class="st">&quot;data/sativa413.rds&quot;</span>)</span>
+<span id="cb10-7"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-7" tabindex="-1"></a><span class="fu">write_rds</span>(ped_data, <span class="at">file =</span> <span class="st">&quot;data/sativas413.rds&quot;</span>)</span>
 <span id="cb10-8"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-8" tabindex="-1"></a></span>
 <span id="cb10-9"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-9" tabindex="-1"></a><span class="co"># Step 3: Load metadata files</span></span>
-<span id="cb10-10"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-10" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativa413.map&quot;</span>, </span>
+<span id="cb10-10"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-10" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativas413.map&quot;</span>, </span>
 <span id="cb10-11"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-11" tabindex="-1"></a>                       <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;chr&quot;</span>, <span class="st">&quot;snp_id&quot;</span>, <span class="st">&quot;gen_dist&quot;</span>, <span class="st">&quot;bp_pos&quot;</span>), </span>
 <span id="cb10-12"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-12" tabindex="-1"></a>                       <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-13"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-13" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-14" tabindex="-1"></a>fam_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativa413.fam&quot;</span>, </span>
+<span id="cb10-14"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-14" tabindex="-1"></a>fam_data <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">&quot;data/sativas413.fam&quot;</span>, </span>
 <span id="cb10-15"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-15" tabindex="-1"></a>                       <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;FID&quot;</span>, <span class="st">&quot;IID&quot;</span>, <span class="st">&quot;PID&quot;</span>, <span class="st">&quot;MID&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;phenotype&quot;</span>), </span>
 <span id="cb10-16"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-16" tabindex="-1"></a>                       <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-17"><a href="how-do-you-efficiently-load-and-store-gwas-data-files-in-r.html#cb10-17" tabindex="-1"></a></span>
@@ -338,7 +340,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/04-1-gwas.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/01-1-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

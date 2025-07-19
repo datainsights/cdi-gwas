@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Q&A 12 How do you perform a genome-wide SNP scan to generate GWAS results? | gwas.knit</title>
+  <title>Q&A 19 GWAS Pipeline Stitched From Q&amp;A | gwas.knit</title>
   <meta name="description" content="Learning GWAS One Step at a Time with R" />
   <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Q&A 12 How do you perform a genome-wide SNP scan to generate GWAS results? | gwas.knit" />
+  <meta property="og:title" content="Q&A 19 GWAS Pipeline Stitched From Q&amp;A | gwas.knit" />
   <meta property="og:type" content="book" />
   
   
   <meta name="github-repo" content="https://github.com/datainsights/cdi-gwas/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Q&A 12 How do you perform a genome-wide SNP scan to generate GWAS results? | gwas.knit" />
+  <meta name="twitter:title" content="Q&A 19 GWAS Pipeline Stitched From Q&amp;A | gwas.knit" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="prev" href="how-do-you-interpret-gwas-model-results-with-pca-covariates.html"/>
-<link rel="next" href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html"/>
+<link rel="prev" href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -266,90 +266,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results" class="section level1 hasAnchor" number="12">
-<h1><span class="header-section-number">Q&A 12</span> How do you perform a genome-wide SNP scan to generate GWAS results?<a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="explanation-11" class="section level2 hasAnchor" number="12.1">
-<h2><span class="header-section-number">12.1</span> Explanation<a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#explanation-11" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Once you’ve merged your phenotype, PCA covariates, and genotype matrix into a single data frame (<code>gwas_input</code>), you can perform a <strong>genome-wide association scan</strong>.</p>
-<p>This involves fitting a linear model for each SNP, adjusting for population structure (e.g., PCs), and extracting the <strong>effect size</strong> and <strong>p-value</strong> for each SNP. These results are saved in a table for downstream visualization using Manhattan or QQ plots.</p>
-<p>Each model looks like:</p>
-<p><em>Plant height ~ PC1 + PC2 + PC3 + SNP_i</em></p>
-<p>We loop over all SNP columns in the dataset that match known prefixes (<code>id</code>, <code>ud</code>, <code>wd</code>, <code>dd</code>, <code>fd</code>) and collect the outputs.</p>
-</div>
-<div id="r-code-9" class="section level2 hasAnchor" number="12.2">
-<h2><span class="header-section-number">12.2</span> R Code<a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#r-code-9" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-1" tabindex="-1"></a><span class="co"># Load required package</span></span>
-<span id="cb46-2"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb46-3"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-3" tabindex="-1"></a></span>
-<span id="cb46-4"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-4" tabindex="-1"></a><span class="co"># Step 1: Identify SNP columns using prefix pattern</span></span>
-<span id="cb46-5"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-5" tabindex="-1"></a>snp_cols <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;^(id|ud|wd|dd|fd)[0-9]+$&quot;</span>, <span class="fu">names</span>(gwas_input), <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb46-6"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-6" tabindex="-1"></a></span>
-<span id="cb46-7"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-7" tabindex="-1"></a><span class="co"># Step 2: Check number of SNPs selected</span></span>
-<span id="cb46-8"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb46-8" tabindex="-1"></a><span class="fu">length</span>(snp_cols)      <span class="co"># Should return 3755</span></span></code></pre></div>
-<pre><code>[1] 3755</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb48-1" tabindex="-1"></a><span class="fu">head</span>(snp_cols, <span class="dv">5</span>)     <span class="co"># Preview first 5 SNPs</span></span></code></pre></div>
-<pre><code>[1] &quot;id1000007&quot; &quot;id1000051&quot; &quot;id1000080&quot; &quot;id1000091&quot; &quot;id1000093&quot;</code></pre>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-1" tabindex="-1"></a><span class="co"># Step 3: Initialize list to collect GWAS results</span></span>
-<span id="cb50-2"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-2" tabindex="-1"></a>gwas_results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb50-3"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-3" tabindex="-1"></a></span>
-<span id="cb50-4"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-4" tabindex="-1"></a><span class="co"># Step 4: Loop over each SNP and fit linear model</span></span>
-<span id="cb50-5"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-5" tabindex="-1"></a><span class="cf">for</span> (snp <span class="cf">in</span> snp_cols) {</span>
-<span id="cb50-6"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-6" tabindex="-1"></a>  <span class="co"># Construct formula dynamically</span></span>
-<span id="cb50-7"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-7" tabindex="-1"></a>  formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">&quot;`Plant height` ~ PC1 + PC2 + PC3 +&quot;</span>, snp))</span>
-<span id="cb50-8"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-8" tabindex="-1"></a>  </span>
-<span id="cb50-9"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-9" tabindex="-1"></a>  <span class="co"># Fit model safely</span></span>
-<span id="cb50-10"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-10" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>(</span>
-<span id="cb50-11"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-11" tabindex="-1"></a>    <span class="fu">lm</span>(formula, <span class="at">data =</span> gwas_input),</span>
-<span id="cb50-12"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-12" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NULL</span></span>
-<span id="cb50-13"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-13" tabindex="-1"></a>  )</span>
-<span id="cb50-14"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-14" tabindex="-1"></a>  </span>
-<span id="cb50-15"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-15" tabindex="-1"></a>  <span class="co"># Step 5: If successful, extract coefficient and p-value</span></span>
-<span id="cb50-16"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-16" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(model)) {</span>
-<span id="cb50-17"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-17" tabindex="-1"></a>    coef_table <span class="ot">&lt;-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>coefficients</span>
-<span id="cb50-18"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-18" tabindex="-1"></a>    snp_row <span class="ot">&lt;-</span> <span class="fu">tail</span>(<span class="fu">rownames</span>(coef_table), <span class="dv">1</span>)</span>
-<span id="cb50-19"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-19" tabindex="-1"></a>    </span>
-<span id="cb50-20"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-20" tabindex="-1"></a>    gwas_results[[snp]] <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb50-21"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-21" tabindex="-1"></a>      <span class="at">SNP =</span> snp,</span>
-<span id="cb50-22"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-22" tabindex="-1"></a>      <span class="at">Estimate =</span> coef_table[snp_row, <span class="st">&quot;Estimate&quot;</span>],</span>
-<span id="cb50-23"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-23" tabindex="-1"></a>      <span class="at">P_value =</span> coef_table[snp_row, <span class="st">&quot;Pr(&gt;|t|)&quot;</span>]</span>
-<span id="cb50-24"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-24" tabindex="-1"></a>    )</span>
-<span id="cb50-25"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-25" tabindex="-1"></a>  }</span>
-<span id="cb50-26"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-26" tabindex="-1"></a>}</span>
-<span id="cb50-27"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-27" tabindex="-1"></a></span>
-<span id="cb50-28"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-28" tabindex="-1"></a><span class="co"># Step 6: Combine results and sort by p-value</span></span>
-<span id="cb50-29"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-29" tabindex="-1"></a>gwas_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(gwas_results) <span class="sc">%&gt;%</span></span>
-<span id="cb50-30"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-30" tabindex="-1"></a>  <span class="fu">arrange</span>(P_value)</span>
-<span id="cb50-31"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-31" tabindex="-1"></a></span>
-<span id="cb50-32"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-32" tabindex="-1"></a><span class="co"># Step 7: Save the GWAS results for visualization</span></span>
-<span id="cb50-33"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-33" tabindex="-1"></a><span class="fu">write_csv</span>(gwas_df, <span class="st">&quot;data/gwas_results.csv&quot;</span>)</span>
-<span id="cb50-34"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-34" tabindex="-1"></a></span>
-<span id="cb50-35"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-35" tabindex="-1"></a><span class="co"># Step 8: Preview top hits</span></span>
-<span id="cb50-36"><a href="how-do-you-perform-a-genome-wide-snp-scan-to-generate-gwas-results.html#cb50-36" tabindex="-1"></a><span class="fu">head</span>(gwas_df, <span class="dv">10</span>)</span></code></pre></div>
-<pre><code># A tibble: 10 × 3
-   SNP        Estimate  P_value
-   &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;
- 1 id1024159     -16.6 7.55e-19
- 2 ud10000717     19.6 2.02e-14
- 3 id10003000     17.7 1.10e-13
- 4 id6000791      11.9 1.40e-12
- 5 id3010870     -12.2 1.50e-12
- 6 id2014431      19.3 3.05e-12
- 7 id1024488      11.5 3.51e-12
- 8 id11001027     14.5 3.53e-12
- 9 id1020565     -14.8 5.70e-12
-10 id2001618      14.3 1.04e-11</code></pre>
-<blockquote>
-<p>✅ Takeaway: This loop scans 3,755 SNPs genome-wide and outputs a clean summary table with effect sizes and p-values — ready for visualization using Manhattan and QQ plots.</p>
-</blockquote>
-</div>
+<div id="gwas-pipeline-stitched-from-qa" class="section level1 hasAnchor" number="19">
+<h1><span class="header-section-number">Q&A 19</span> GWAS Pipeline Stitched From Q&amp;A<a href="gwas-pipeline-stitched-from-qa.html#gwas-pipeline-stitched-from-qa" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="how-do-you-interpret-gwas-model-results-with-pca-covariates.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="how-do-you-create-a-manhattan-plot-from-gwas-results-using-the-ggplot2-package.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -380,7 +307,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/datainsights/cdi-gwas/edit/main/01-1-gwas.Rmd",
+    "link": "https://github.com/datainsights/cdi-gwas/edit/main/01-2-gwas.Rmd",
     "text": "Edit"
   },
   "history": {

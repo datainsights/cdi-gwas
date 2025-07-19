@@ -191,17 +191,17 @@ All files are stored in the `data/` directory and prefixed with `sativa413_`.
 library(tidyverse)
 
 # Step 1: Load genotype data using readr
-ped_data <- read_table("data/sativa413.ped", col_names = FALSE, show_col_types = FALSE)
+ped_data <- read_table("data/sativas413.ped", col_names = FALSE, show_col_types = FALSE)
 
 # Step 2: Save as compressed RDS file
-write_rds(ped_data, file = "data/sativa413.rds")
+write_rds(ped_data, file = "data/sativas413.rds")
 
 # Step 3: Load metadata files
-map_data <- read_table("data/sativa413.map", 
+map_data <- read_table("data/sativas413.map", 
                        col_names = c("chr", "snp_id", "gen_dist", "bp_pos"), 
                        show_col_types = FALSE)
 
-fam_data <- read_table("data/sativa413.fam", 
+fam_data <- read_table("data/sativas413.fam", 
                        col_names = c("FID", "IID", "PID", "MID", "sex", "phenotype"), 
                        show_col_types = FALSE)
 
@@ -226,7 +226,7 @@ This ensures everything is aligned before tidying or merging.
 
 ```{r}
 # Load genotype file (if needed)
-ped_data <- read_rds("data/sativa413.rds")
+ped_data <- read_rds("data/sativas413.rds")
 
 # Check size of each file
 dim(ped_data)         # Genotype matrix
@@ -262,8 +262,8 @@ We also use SNP metadata from the `.map` file — now consistently referred to a
 library(tidyverse)
 
 # Step 1: Load genotype and SNP info (if not already in memory)
-ped_data <- read_rds("data/sativa413.rds")
-snp_info <- read_table("data/sativa413.map", 
+ped_data <- read_rds("data/sativas413.rds")
+snp_info <- read_table("data/sativas413.map", 
                        col_names = c("chr", "snp_id", "gen_dist", "bp_pos"), 
                        show_col_types = FALSE)
 
@@ -492,7 +492,7 @@ This Q&A walks through the process of combining phenotype, PCA, and genotype dat
 library(tidyverse)
 
 # Step 1: Load and align phenotype data with sample metadata (by FID)
-fam_data <- read_table("data/sativa413.fam", 
+fam_data <- read_table("data/sativas413.fam", 
                        col_names = c("FID", "IID", "PID", "MID", "sex", "phenotype"), 
                        show_col_types = FALSE)
 
@@ -658,7 +658,7 @@ library(tidyverse)
 
 # Step 1: Load GWAS results and SNP position data
 gwas_df <- read_csv("data/gwas_results.csv")
-map_df <- read_tsv("data/sativa413.map", 
+map_df <- read_tsv("data/sativas413.map", 
                    col_names = c("CHR", "SNP", "GEN_DIST", "BP_POS"),
                    show_col_types = FALSE)
 
@@ -723,7 +723,7 @@ library(qqman)
 gwas_df <- read_csv("data/gwas_results.csv")
 
 # Step 2: Load SNP position data (.map file)
-map_df <- read_tsv("data/sativa413.map", 
+map_df <- read_tsv("data/sativas413.map", 
                    col_names = c("CHR", "SNP", "GEN_DIST", "BP"),
                    show_col_types = FALSE)
 
@@ -968,7 +968,7 @@ significant_hits <- gwas_df %>%
   arrange(P_value)
 
 # Step 4: Load SNP position data
-map_df <- read_tsv("data/sativa413.map",
+map_df <- read_tsv("data/sativas413.map",
                    col_names = c("CHR", "SNP", "GEN_DIST", "BP"),
                    show_col_types = FALSE)
 

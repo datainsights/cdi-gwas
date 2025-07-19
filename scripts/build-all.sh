@@ -7,7 +7,8 @@ total_start=$(date +%s)  # ⬅️ Start total timer
 
 # Define the list of Jupyter Notebook filenames (without extension)
 NOTEBOOK_NAMES=(
-    "04-1-gwas"
+    "01-1-gwas"
+    "01-2-gwas"
 )
 
 # Define the output directory (use current folder)
@@ -52,7 +53,7 @@ done
 echo "🚀 Starting full build for all levels..."
 
 # levels=("eda-gitbook" "viz-gitbook" "viz-pdf" "stats-gitbook" "stats-pdf" "ml-gitbook" "ml-pdf")
-levels=("gwas-gitbook" "gwas-pdf")
+levels=("gwas-gitbook")
 for level in "${levels[@]}"; do
   echo ""
   echo "🔁 Building: $level"

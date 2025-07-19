@@ -59,3 +59,4 @@ r-code-13
 how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis
 explanation-17
 r-code-14
+gwas-pipeline-stitched-from-qa

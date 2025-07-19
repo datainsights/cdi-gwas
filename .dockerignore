@@ -1,0 +1,55 @@
+############################
+# 📦 R-related artifacts
+############################
+.Rhistory
+.RData
+.Rproj.user/
+.Ruserdata
+*.Rproj
+
+############################
+# 🐍 Python-related files
+############################
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints
+*.egg-info/
+.env
+venv/
+
+############################
+# 📚 Bookdown build output
+############################
+_book/
+docs/
+*.html
+*.pdf
+
+############################
+# 📁 User/system junk files
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# 🧪 Git + VS Code config
+############################
+.git/
+.gitignore
+.vscode/
+*.code-workspace
+
+############################
+# 📊 Data & results
+############################
+data/           # Will be downloaded dynamically by gwas_data.sh
+results/        # Output generated during runtime
+
+############################
+# 📦 Compressed/binary files
+############################
+*.zip
+*.gz
+*.tar.gz
+*.rds
+*.rda
