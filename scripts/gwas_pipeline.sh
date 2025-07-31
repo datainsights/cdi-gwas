@@ -20,7 +20,7 @@ mkdir -p "$OUT_DIR"
 
 # Input file paths (PED/MAP format)
 GENOTYPE="$DATA_DIR/sativas413"                 # Expects .ped/.map/.fam
-PHENOTYPE="$DATA_DIR/sativa413_phenotypes.txt" # Tab-delimited with FID, IID, PHENO
+PHENOTYPE="$DATA_DIR/sativas413_phenotypes.txt" # Tab-delimited with FID, IID, PHENO
 COVARIATE="$DATA_DIR/covariates.txt"           # Optional
 
 # ------------------------------------------

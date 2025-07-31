@@ -6,7 +6,7 @@ bookdown::gitbook:
       before: |
         <li><a href="https://datainsights.github.io/cdi-gwas">Genome Wide Studies</a></li>
       after: |
-        <li><a href="https://complexdatainsights.com/product">Explore More Guides</a></li>
+        <li><a href="https://complexdatainsights.com/explore-products">Explore More Guides</a></li>
     edit: https://github.com/datainsights/cdi-gwas/edit/main/%s
     download: ["pdf", "epub"]
 

@@ -52,6 +52,11 @@ done
 
 echo "🚀 Starting full build for all levels..."
 
+# Download GWAS Data
+echo "🔁 Downloading GWAS input file"
+bash ./scripts/gwas_data.sh
+
+
 # levels=("eda-gitbook" "viz-gitbook" "viz-pdf" "stats-gitbook" "stats-pdf" "ml-gitbook" "ml-pdf")
 levels=("gwas-gitbook")
 for level in "${levels[@]}"; do

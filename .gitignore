@@ -29,6 +29,7 @@ ml-gitbook/
 *.pdf
 
 # Images and data
+-data/
 data/
 images/
 !docs/images/

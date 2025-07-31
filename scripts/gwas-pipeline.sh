@@ -148,7 +148,7 @@ echo "✅ GWAS data successfully prepared in the data/ folder."
 The Bash script is saved as:  
 
 ```bash
-script/gwas_data.sh
+scripts/gwas_data.sh
 ```
 
 To run it:
@@ -162,7 +162,7 @@ After execution, the `data/` folder contains:
 
 ```
 project/
-├── script/
+├── scripts/
 │   └── gwas_data.sh
 └── data/
     ├── sativa413.map
@@ -455,24 +455,7 @@ We apply PCA on the **imputed genotype dosage matrix**, excluding identifier col
 ## R Code
 
 ```{r}
-# Load libraries
-library(tidyverse)
 
-# Step 1: Extract genotype matrix (exclude FID and IID)
-geno_numeric <- geno_imputed[, -c(1, 2)]
-
-# Step 2: Perform PCA using prcomp
-pca_result <- prcomp(geno_numeric, center = TRUE, scale. = TRUE)
-
-# Step 3: Combine first 5 PCs with sample IDs
-pca_df <- geno_imputed[, 1:2] %>%  # FID and IID
-  bind_cols(as_tibble(pca_result$x[, 1:5]))  # PC1 to PC5
-
-# Step 4: Plot PC1 vs PC2
-ggplot(pca_df, aes(x = PC1, y = PC2)) +
-  geom_point(size = 2, alpha = 0.7) +
-  labs(title = "PCA of Genotype Data", x = "PC1", y = "PC2") +
-  theme_minimal()
 ```
 
 > ✅ **Takeaway:** PCA helps uncover hidden structure in your GWAS population. Always reattach `FID` and `IID` to PCA scores so they can be merged with phenotype and genotype metadata for downstream modeling.
@@ -985,93 +968,3 @@ head(annotated_hits, 10)
 
 > ✅ Takeaway: Identifying and saving genome-wide significant SNPs ensures a clean input for downstream analysis such as gene annotation, pathway mapping, or publication reporting.
 
-
-# How do you visualize significant SNPs from a Bonferroni-corrected GWAS results file?
-
-## Explanation
-
-After applying a Bonferroni correction in a GWAS analysis, we are left with a set of SNPs that meet a stringent significance threshold. Visualizing these SNPs helps identify genomic regions of interest and patterns of association. A common approach is to create a Manhattan-style scatter plot showing:
-
-- **Chromosome (CHR)** or base pair position (BP) on the x-axis
-- **–log₁₀(P-value)** on the y-axis to emphasize stronger associations
-- Points optionally colored by chromosome for interpretability
-- Labels for highly significant SNPs
-
-This visualization provides a clear overview of which SNPs are driving the strongest signals in your study.
-
-## Python Code
-
-
-
-
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-
-# Load the SNP data
-snps = pd.read_csv("data/significant_snps_bonferroni.csv")
-
-# Compute -log10(P-value)
-snps["logP"] = -np.log10(snps["P_value"])
-
-# Plot SNP significance by position and chromosome
-plt.figure(figsize=(10, 6))
-sns.scatterplot(
-    data=snps,
-    x="BP",
-    y="logP",
-    hue="CHR",
-    palette="Set2",
-    s=60
-)
-
-plt.title("Significant SNPs (Bonferroni-corrected)")
-plt.xlabel("Base Pair Position")
-plt.ylabel("-log10(P-value)")
-plt.legend(title="Chromosome", bbox_to_anchor=(1.05, 1), loc="upper left")
-plt.tight_layout()
-plt.show()
-```
-
-
-    
-![](01-1-gwas_files/01-1-gwas_26_0.png)
-    
-
-
-## R Code
-
-```{r}
-# Load required packages
-library(tidyverse)
-library(ggrepel)
-
-# Read the SNP data
-snps <- read_csv("data/significant_snps_bonferroni.csv")
-
-# Compute -log10(P-value)
-snps <- snps %>%
-  mutate(logP = -log10(P_value))
-
-# Plot with chromosome coloring and labels for strong hits
-ggplot(snps, aes(x = BP, y = logP, color = as.factor(CHR))) +
-  geom_point(size = 3) +
-  geom_text_repel(
-    data = snps %>% filter(logP > 12),
-    aes(label = SNP),
-    size = 3
-  ) +
-  facet_wrap(~CHR, scales = "free_x") +
-  labs(
-    title = "Significant SNPs (Bonferroni-corrected)",
-    x = "Base Pair Position",
-    y = expression(-log[10](P-value)),
-    color = "Chromosome"
-  ) +
-  theme_minimal()
-```
-
-> ✅ Takeaway: This visualization helps you inspect which SNPs reach genome-wide significance and how they are distributed across chromosomes. Labeling key hits adds insight into potential candidate loci.

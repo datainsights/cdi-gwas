@@ -59,4 +59,7 @@ r-code-13
 how-do-you-identify-genome-wide-significant-snp-hits-and-save-them-for-downstream-analysis
 explanation-17
 r-code-14
-gwas-pipeline-stitched-from-qa
+how-do-you-visualize-significant-snps-from-a-bonferroni-corrected-gwas-results-file
+explanation-18
+python-code-1
+r-code-15
