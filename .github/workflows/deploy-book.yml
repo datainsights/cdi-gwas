@@ -18,17 +18,4 @@ jobs:
           publish_dir: ./docs
           publish_branch: gh-pages
           cname:
-<<<<<<< Updated upstream
           
-=======
-
-      - name: 📦 Publish Full Book to 'fullbook' branch
-        if: ${{ hashFiles('book/dist_full/**') != '' }}
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: book/dist_full
-          publish_branch: fullbook
-          keep_files: false
-          force_orphan: true
->>>>>>> Stashed changes
